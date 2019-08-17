@@ -1,35 +1,120 @@
-{#table_data_list.html#}
-{## ————————08PerfectCRM实现King_admin显示注册表的字段表头————————#}
-
-{% extends 'king_admin/king_index.html' %} 
-
+{% extends 'king_admin/king_index.html' %}  
 {% load kingadmin_tags %}
 
 {% block right-container %}
 
+    <div class="row" style="margin-bottom: 20px" >
+        <ol class="breadcrumb">
+        <li><a href="/king_admin/">主页</a></li>
+        <li><a href="/king_admin/{% get_app_name admin_obj.model %}/">{% get_app_name admin_obj.model %}</a></li>
+        <li class="active">{% get_model_verbose_name admin_obj.model%}</li>
+        <a href="{{ request.path }}add/" class="btn btn-sm btn-success pull-right">+添加 {% get_model_verbose_name admin_obj.model%} </a>
+    
+    </ol>
+    </div>
+
     <h4>{% get_model_verbose_name admin_obj.model  %}</h4>
+    {% if admin_obj.list_filter %}
+        <div class="row">
+            <form>
+                {% for filter_column in admin_obj.list_filter %}
+                    <div class="col-lg-1">{#最多12份 空间 #}
+                        <div>{{ filter_column }}</div>
+                        <div>{% get_filter_field  filter_column admin_obj %}</div>
+                    </div>
+                {% endfor %}
+                    <div>
+                        <input type="submit" class="btn btn-success" value="过滤">
+                    </div>
+                    <div>
+                        <input type="hidden" name="_o" value="{% get_current_orderby_key request %}">
+                    </div>
+                <hr>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <input type="text" name="_q" value="{% get_search_key request %}">
+                    </div>
+                    <div class="col-lg-2">
+                        <input type="submit" class="btn btn-success" value="搜索">
+                    </div>
+
+                    <div style='color: red'>  搜索条件包含：
+                        {% for search_field in admin_obj.search_fields %}
+                            {{ search_field }}
+                            +
+                        {% endfor %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+    <hr>
+    <form method="POST" onsubmit="return ActionCheck(this)">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-lg-3">
+                <select class="form-control" name="action">
+                    {% get_admin_actions admin_obj %}
+                </select>
+            </div>
+            <div class="col-lg-2">
+                <input type="submit" value="执行" class="btn btn-primary" style="padding: 6px">
+            </div>
+        </div>
+    </form>
 
     <table class="table table-hover">
           <thead>
             <tr>
+                <th><input type="checkbox" onclick="SelectALLObjs(this)"></th>
                 {% for column in admin_obj.list_display %}
-                    <th>{{ column }}</th>
+                <th>
+                    <a href="?_o={% get_orderby_key request  column %}{%  generate_filter_url admin_obj %}">{{ column }}</a>
+                    {% display_order_by_icon request column %}
+                </th>
                 {% endfor %}
+
             </tr>
           </thead>
 
           <tbody>
             {% for obj in admin_obj.querysets %}
                 <tr>
+                    <td><input type="checkbox" row-select='true' value="{{ obj.id }}"></td>
                     {% build_table_row  admin_obj obj  %}
-                    {% for column in admin_obj.list_display %}
-17                     <th>{{ column }}</th>
-18                 {% endfor %}
                 </tr>
             {% endfor %}
           </tbody>
-
     </table>
+    <div class="radio">
+        数据总量：  {{ admin_obj.querysets.paginator.count }}  条
+    </div>
+    <div class="row panel-body">
+        <nav aria-label="...">
+            <ul class="pagination">
+                <!--如果有上一页-->
+                {% if admin_obj.querysets.has_previous %}
+<li><a href="?page={{ admin_obj.querysets.previous_page_number }}{% generate_order_by_url request  %}{% generate_filter_url admin_obj %}"
+       aria-label="Previous"><span aria-hidden="true">上页</span></a></li>
+                {% else %}
+                    <li class="disabled">
+                        <a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                {% endif %}
 
+                <!--#分页的省略显示  kingadmin/templatetags/kingadmin_tags.py里def pag_omit(request,admin_obj):-->
+                {% pag_omit request admin_obj %}
 
+                <!--如果有下一页-->
+                {% if admin_obj.querysets.has_next %}
+
+<li><a href="?page={{ admin_obj.querysets.next_page_number }}{% generate_order_by_url request  %}{% generate_filter_url admin_obj %}"
+       aria-label="Previous"><span aria-hidden="true">下页</span></a></li>
+
+                {% else %}
+                    <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&raquo;</span></a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
 {% endblock %}

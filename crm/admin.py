@@ -1,9 +1,16 @@
 from django.contrib import admin
+from django.shortcuts import render
+
 # Register your models here.
 from crm import models #从crm导入models
 
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ['id', 'qq', 'source', 'consultant', 'content', 'date']
+    list_filter = ('source','consultant','consult_courses',)
+    list_per_page = 2
+    search_fields = ('name', 'qq')
+
+    actions = []#定制功能    #测试返回到一个新页面
 
 #注册到 Django Admin里
 admin.site.register(models.Branch)                  #01校区表

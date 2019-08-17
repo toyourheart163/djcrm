@@ -70,7 +70,6 @@ def crm_Role(request):
 
         return redirect('/DBadd/crm_Role/')
 
-
 # 添加"""10账号表"""  #随机学生
 def crm_UserProfile(request):
     if request.method == "GET":
@@ -108,7 +107,7 @@ def crm_userprofile_roles(request):
     if request.method == "GET":
         user_list = models.UserProfile.objects.all()
         role_list = models.Role.objects.get(id=1)
-        return render(request, 'crm_userprofile_roles.html', {'user_list': user_list, 'role_list': role_list})
+        return render(request, 'DBadd/crm_userprofile_roles.html', {'user_list': user_list, 'role_list': role_list})
     elif request.method == "POST":
         try:
             for i in range(50):

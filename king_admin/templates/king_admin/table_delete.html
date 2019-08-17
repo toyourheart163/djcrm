@@ -1,0 +1,18 @@
+{% extends 'king_admin/table_index.html' %}
+{% load kingadmin_tags %}
+
+{% block right-container %}
+    <h3>你确定吗？</h3>
+    <h5>你确认想要删除 <span style="color: red">{{ model_name }}:{{ objs }}</span>？ 下列所有相关的项目都将被删除：</h5>
+    <h3>对象</h3>
+    {% display_all_related_obj objs %}
+
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="submit" class="btn btn-danger" value="确定删除">
+
+        <a href="{% url 'table_data_list' app_name model_name %}" class="btn btn-info">取消，返回</a>
+    
+    </form>
+{% endblock %}
