@@ -1,37 +1,51 @@
+{#templates/base.html#}
+{% load staticfiles %}
+
 <!DOCTYPE html>
+<!-- saved from url=(0042)https://v3.bootcss.com/examples/dashboard/ -->
 <html lang="zh-CN">
-    <head>
-        {#      <meta> 元素可提供有关页面的元信息（meta-information），比如针对搜索引擎和更新频度的描述和关键词。#}
-        {#      <meta> 标签位于文档的头部，不包含任何内容。<meta> 标签的属性定义了与文档相关联的名称/值对。#}
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="">
-        <meta name="author" content="">
 
-        <link rel="icon" href="/static/king_img/king_logo.jpg">{# icon，指的是图标 #}
-        <title>KingAdmin</title> {# 页面头部显示#}
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-        {#        使用link来调用外部的css文件#}
-        <link rel="stylesheet"  href="/static/css/bootstrap.min.css"  /> {#导航栏样式#}
-        <link rel="stylesheet"  href="/static/css/dashboard.css" /> {#指示板样式#}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    {#    <link rel="icon" href="https://v3.bootcss.com/favicon.ico">#}
 
+    <title>PerfectCRM</title>
 
-        {% block header-recources %}{#自定义内容 head#}{% endblock %}
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
 
-    </head>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="{% static 'css/ie10-viewport-bug-workaround.css' %}" rel="stylesheet">
 
-    <body>
-
-        {% block body %}{#自定义内容 body#}{% endblock %}
-
-        {#        将纯JavaScript的语句另外保存在一个"*.js"的文件中，需要时再调用。#}
-        <script src="/static/king_js/jquery.js"></script>   {# jQuery 是一个 JavaScript库，极大地简化了 JavaScript 编程。#}
-        <script src="/static/king_js/bootstrap.js"></script>  {#指示板JS事件#}
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
 
 
+    <script src="{% static 'js/ie-emulation-modes-warning.js' %}"></script>
 
-    </body>
+</head>
+
+<body>
+
+    {% block body %}
+
+    {% endblock %}
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+
+</body>
+
 </html>
-
-{#king_base.html#}

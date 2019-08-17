@@ -1,0 +1,35 @@
+{#table_data_list.html#}
+{## ————————08PerfectCRM实现King_admin显示注册表的字段表头————————#}
+
+{% extends 'king_admin/king_index.html' %} 
+
+{% load kingadmin_tags %}
+
+{% block right-container %}
+
+    <h4>{% get_model_verbose_name admin_obj.model  %}</h4>
+
+    <table class="table table-hover">
+          <thead>
+            <tr>
+                {% for column in admin_obj.list_display %}
+                    <th>{{ column }}</th>
+                {% endfor %}
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for obj in admin_obj.querysets %}
+                <tr>
+                    {% build_table_row  admin_obj obj  %}
+                    {% for column in admin_obj.list_display %}
+17                     <th>{{ column }}</th>
+18                 {% endfor %}
+                </tr>
+            {% endfor %}
+          </tbody>
+
+    </table>
+
+
+{% endblock %}
