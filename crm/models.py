@@ -1,5 +1,9 @@
 from django.db import models
 # Create your models here.
+from django.contrib.auth.models import (
+    BaseUserManager, AbstractBaseUser, PermissionsMixin)
+from django.utils.translation import ugettext_lazy as _  # 语言国际化
+from django.utils.safestring import mark_safe
 
 """01校区表"""
 class Branch(models.Model):
@@ -236,6 +240,7 @@ class StudyRecord(models.Model):
         verbose_name_plural =  "09学习纪录"#verbose_name_plural给你的模型类起一个更可读的名字
 
 """10账号表"""
+"""
 class UserProfile(models.Model):
     from django.contrib.auth.models import User  # 使用django内置的用户表
 
@@ -247,10 +252,85 @@ class UserProfile(models.Model):
     #ManyToManyField多对多和外键工作方式相同，只不过我们处理的是QuerySet而不是模型实例。#Django可空
     roles = models.ManyToManyField("Role",blank=True) #角色(权限)   # 双向一对多==多对多
 
-    def __str__(self):#__str__()是Python的一个“魔幻”方法，这个方法定义了当object调用str()时应该返回的值。
+    def __str__(self):
         return self.name #返回 #账号名
     class Meta: #通过一个内嵌类 "class Meta" 给你的 model 定义元数据
         verbose_name_plural = "10账号表"#verbose_name_plural给你的模型类起一个更可读的名字
+"""
+
+class UserProfileManager(BaseUserManager):
+    def create_user(self, email, name, password=None):
+        """
+    　　创建并保存一个用户用给定的邮件,日期
+    　　出生和密码。
+        """
+        if not email:#没有email 报错
+            raise ValueError('用户必须有一个电子邮件地址')
+
+        user = self.model(
+            email=self.normalize_email(email),#验证邮箱格式
+            name=name,
+        )
+        user.set_password(password)#加密
+        user.is_active = True
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, name, password):
+        """
+    　　创建并保存一个超级用户具有给定邮件,日期
+    　　出生和密码。
+        """
+        user = self.create_user(email,
+            password=password,
+            name=name
+        )
+        user.is_active = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
+
+class UserProfile(AbstractBaseUser, PermissionsMixin):
+    email=models.EmailField(
+        verbose_name='邮箱账号',
+        max_length=255,
+        unique=True#唯一  #登陆账号
+    )
+    name=models.CharField(max_length=32,verbose_name='用户名')
+    password = models.CharField(_('password'), max_length=128, help_text=mark_safe('''<a href=\"../password/\">修改密码</a>'''))
+
+    is_active = models.BooleanField(default=True,verbose_name='合法账号')#权限#合法账号
+    is_superuser = models.BooleanField(default=False,verbose_name='超级账号') #超级账号
+    USERNAME_FIELD ='email'#指定做为  #登陆账号
+    REQUIRED_FIELDS = ['name']#必填字段
+
+    objects = UserProfileManager()#创建账号 #关联这个函数
+
+    def get_full_name(self):
+        return self.email
+
+    def get_short_name(self):
+        #用户确认的电子邮件地址
+        return self.email
+
+    def __str__(self):
+        return self.name
+
+    def has_perm(self,perm,obj=None):
+        #指明用户是否被认为活跃的。以反选代替删除帐号。
+        #最简单的可能的答案:是的,总是
+        return True   #有效 账号
+
+    def has_module_perms(self, app_label):
+        #指明用户是否可以登录到这个管理站点。
+        # 最简单的可能的答案:是的,总是
+        return True #职员状态
+
+    @property
+    def is_staff(self):
+        '''“用户的员工吗?”'''
+        #最简单的可能的答案:所有管理员都是员工
+        return self.is_superuser#是不是超级用户状态
 
 """11角色表"""
 class Role(models.Model):

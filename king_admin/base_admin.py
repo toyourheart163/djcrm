@@ -23,18 +23,30 @@ class BaseAdmin(object):#自定义方法
     list_filter = ()
     search_fields = ()
     actions = []
-    default_actions = ["delete_selected_objs",]  #默认删除的函数
+    default_actions = ["delete_selected",]  #默认删除的函数
     ordering = None
     filter_horizontal = []
+    readonly_fields = []
+    readonly_table = False
+    exclude = []
+
+    def default_form_validation(self,request):
+        #用户可以在此进行自定义的表单验证，相当于django form 的clean方法
+        '''默认表单验证  ==  django form 的clean方法'''
+        pass
 
     #默认删除的函数
-    def delete_selected_objs(self, request, querysets):
-        app_name = self.model._meta.app_label#app名
-        model_name = self.model._meta.model_name#表名
+    def delete_selected(self, request, querysets):
+        selected_ids = json.dumps([i.id for i in querysets])
+        app_name = self.model._meta.app_label
+        model_name = self.model._meta.model_name
         objs = querysets
-        # action=request.action
-        return render(request,'king_admin/table_delete.html', locals())
-    delete_selected_objs.short_description = "默认批量删除"
+        if self.readonly_table:
+            errors={'锁定的表单':'当前表单已经锁定,不可进行批量删除操作!'}
+        else:
+            errors={}
+        return render(request,'king_admin/table_delete.html',locals())
+    delete_selected.short_description = "默认批量删除"
 
 class AdminSite(object):
     def __init__(self):

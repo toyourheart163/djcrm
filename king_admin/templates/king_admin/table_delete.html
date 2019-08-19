@@ -3,16 +3,28 @@
 
 {% block right-container %}
     <h3>你确定吗？</h3>
-    <h5>你确认想要删除 <span style="color: red">{{ model_name }}:{{ objs }}</span>？ 下列所有相关的项目都将被删除：</h5>
     <h3>对象</h3>
-    {% display_all_related_obj objs %}
+    {% for obj in objs %}
+    {% display_all_related_objs obj as all_related_obj_eles %}
+    {{ all_related_obj_eles|safe }}
+    {% endfor %}
 
-
-    <form action="" method="post">
+    <div><ul style = "color:#ff65a3">
+        {% for k,v in errors.items %}
+            <li><h1>{{ k }}:{{ v }}</h1></li>
+        {% endfor %}
+    </ul> </div>
+    <form method="post">
         {% csrf_token %}
-        <input type="submit" class="btn btn-danger" value="确定删除">
-
+        {% if selected_ids %}
+        <input type="hidden" name="selected_ids" value="{{ selected_ids }}">
+        {% endif %}
+        {% if not admin_obj.readonly_table %}
+            <input type="submit" class="btn btn-danger" value="确定删除">
+        {% else%}
+            <div><h3 style='color: #ff0003'>温馨提示：本张表现在为只读状态，不可以删除！</h3> </div>
+        {% endif %}
         <a href="{% url 'table_data_list' app_name model_name %}" class="btn btn-info">取消，返回</a>
-    
+
     </form>
 {% endblock %}

@@ -10,4 +10,6 @@ urlpatterns = [
     re_path(r'^(\w+)/$', views.table_index, name='table_index'),
     re_path(r'^(\w+)/(\w+)/add/$', views.table_add,name='table_add'),
     re_path(r'^(\w+)/(\w+)/(\d+)/delete/$', views.table_delete, name="table_delete"),
+    re_path(r'^(\w+)/(\w+)/(\d+)/password/$', views.password_reset, name="password_reset"),  # 修改密码
+    re_path(r'^(\w+)/(\w+)/password/$', views.password_add, name="password_add"),  # 修改密码跳转到添加
 ]
