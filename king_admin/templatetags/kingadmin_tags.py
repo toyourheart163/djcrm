@@ -193,95 +193,59 @@ def get_search_key(request):   #  搜索框里保留搜索值
     return search_key or ''
 
 @register.simple_tag
-def display_all_related_obj(objs):
-    # 取出对象及所有相关联的数据
-    from django.db.models.query import QuerySet
-    if type(objs) != QuerySet:
-        objs = [objs, ]
-    if objs:
-        model_class = objs[0]._meta.model  # 取表对象
-        model_name = objs[0]._meta.model_name  # 取表名
-        return mark_safe(recursive_related_objs_lookup(objs))
+def get_available_m2m_data(field_name, form_obj, admin_class):
+    '''返回的是m2m字段关联表的所有数据'''
+    #获取字段的对象
+    field_obj = admin_class.model._meta.get_field(field_name)
 
-# <-----------------递归获取映射关系--------------------------------
-def recursive_related_objs_lookup(objs, name=None, conn_batch_size=0):
-    name = set()
-    print(name)
-    print('传递过来的objs:', objs)
-    # 开始标签的拼接
-    ul_ele = "<ul style='color: blue'>"
-    for obj in objs:
-        li_ele = '''<li>{0}:{1}</li>'''.format(obj._meta.verbose_name, obj.__str__().strip("<>"))
-        print('str:', obj.__str__(), '类型:', type(obj.__str__()))
-        print('关联的表的自定表名:', li_ele)
-        ul_ele += li_ele
-        print('拼接li_ele:', ul_ele)
-        # 映射关系处理
-        # <---------------------------特殊关联处理-----------------------------------
-        # 多对多关系
-        for m2m_field in obj._meta.local_many_to_many:  # local_many_to_many返回列表，many_to_many返回元祖
-            print('--开始循环反射-多对多-关系处理--')
-            sub_ul_ele = "<ul style='color: red'>"
-            m2m_field_obj = getattr(obj, m2m_field.name)  # 反射 如果有选项
-            print('反射选项:', m2m_field_obj)
+    #consult_courses = models.ManyToManyField('Course',verbose_name='咨询课程')
+    #consult_courses是一个m2m，通过consult_courses对象获取到Course（也就是获取到所有咨询的课程）
+    obj_list = set(field_obj.related_model.objects.all())
+    if form_obj.instance.id:
+        selected_data = set(getattr(form_obj.instance, field_name).all())
+        return obj_list - selected_data
+    else:
+        return obj_list
 
-            for m2m_data in m2m_field_obj.select_related():
-                print('开始循环多对多标签拼接:', m2m_data)
+@register.simple_tag
+def get_selected_m2m_data(field_name,form_obj,admin_class):
+    '''返回已选的m2m数据'''
+    #获取被选中的数据
+    if form_obj.instance.id:
+        selected_data = getattr(form_obj.instance,field_name).all()
+        return selected_data
+    return []
 
-                sub_li_ele = '''<li>{0}:{1}</li>'''.format(m2m_field.verbose_name, m2m_data.__str__().strip("<>"))
-                sub_ul_ele += sub_li_ele
-            sub_ul_ele += '</ul>'
-            ul_ele += sub_ul_ele
-            print('生成完整 多对多 标签..:', ul_ele)
-        # <---------------------------外健关联处理------------------------------------
-        for related_obj in obj._meta.related_objects:
-            print('--开始-外健关联-处理--')
-            if hasattr(obj, related_obj.get_accessor_name()):
-                print('--判断对象中是否包含反查属性--')
-                accessor_obj = getattr(obj, related_obj.get_accessor_name())
-                print('获取反查对应的对象: ')
-                if hasattr(accessor_obj, 'select_related'):
-                    print('--判断有没有获取数据的方法或属性-- ')
-                    target_object = accessor_obj.select_related()
-                    print('获取数据的方法或属性: ', target_object)
+@register.simple_tag
+def display_all_related_objs(obj):
+    """
+    显示要被删除对象的所有关联对象
+    """
+    ele = "<ul><b style='color:red'>%s</b>" % obj
 
-                    if 'ManyToManyRel' in related_obj.__repr__():
-                        print('--开始-外健关联-多对多-处理--.')
-
-                        # 生成UL
-                        sub_ul_ele = '<ul style="color: green">'
-                        for data in target_object:
-                            print('开始循环-外健关联-标签拼接...', data)
-                            sub_li_ele = '''<li>{0}:{1}</li>'''.format(data._meta.verbose_name,
-                                                                       data.__str__().strip("<>"))
-                            sub_ul_ele += sub_li_ele
-                        sub_ul_ele += '</ul>'
-                        ul_ele += sub_ul_ele
-                        print('-外健关联-生成完整标签:', ul_ele)
-                    # <---------------递归处理-------------------
-                    if len(target_object) != conn_batch_size:
-                        print('--有下级对象存在,进行-递归-循环--')
-                        names = target_object.__str__()
-                        print(names, type(names))
-                        if names == name:
-                            print('--如果是自己关联自己，就不递归了--')
-                            ul_ele += '</ul>'
-                            return ul_ele
-                        else:
-                            print('--防止无限递归+1--')
-                            conn_batch_size = conn_batch_size + 1
-                            node = recursive_related_objs_lookup(target_object, name=names,
-                                                                 conn_batch_size=conn_batch_size)
-                            ul_ele += node
-
-                    # <---------------由于使用递归，下面的标签样会发生重复，就不需要使用了--------------------
-                else:
-                    print('外健关联 一对一:', accessor_obj)
-                    target_object = accessor_obj
-                    print("外健关联 一对一：", target_object, '属性：', type(target_object))
-
-    ul_ele += '</ul>'
-    return ul_ele
+    #获取所有反向关联的对象
+    for reversed_fk_obj in obj._meta.related_objects:
+        #获取所有反向关联对象的表名
+        related_table_name =  reversed_fk_obj.name
+        # 通过表名反向查所有关联的数据
+        related_lookup_key = "%s_set" % related_table_name
+        related_objs = getattr(obj,related_lookup_key).all()
+        ele += "<li>%s<ul> "% related_table_name
+        #get_internal_type(),获取字段的类型，如果是m2m，就不需要深入查找
+        if reversed_fk_obj.get_internal_type() == "ManyToManyField":  # 不需要深入查找
+            for i in related_objs:
+                ele += "<li><a href='/kingadmin/%s/%s/%s/change/'>%s</a> 记录里与[%s]相关的的数据将被删除</li>" \
+                       % (i._meta.app_label,i._meta.model_name,i.id,i,obj)
+        #如果不是m2m，就递归查找所有关联的数据
+        else:
+            for i in related_objs:
+                ele += "<li><a href='/kingadmin/%s/%s/%s/change/'>%s</a></li>" \
+                    %(i._meta.app_label, i._meta.model_name,i.id,i)
+                #递归查找
+                ele += display_all_related_objs(i)
+        ele += "</ul></li>"
+    ele += "</ul>"
+    return ele
 
 @register.simple_tag
 def get_admin_actions(admin_obj):
@@ -297,3 +261,29 @@ def get_admin_actions(admin_obj):
             action_name = action#等于函数名称
         options += """<option value="{action_func_name}">{action_name}</option> """.format(action_func_name=action, action_name=action_name)
     return mark_safe(options)
+
+@register.simple_tag
+def get_m2m_available_objs(admin_obj, field_name):
+    '''返回m2m左侧所有待选数据'''
+    # c= admin_obj.model.tags.rel.model.objects.all()
+    # print('c',c)
+    # m2m_objs= admin_obj.model.tags.rel.model.objects.all()
+    # print('m2m_objs',m2m_objs)
+    m2m_model = getattr(admin_obj.model, field_name).rel  # 复选框对象
+    m2m_objs = m2m_model.model.objects.all()  # 获取到复选框所有内容
+    return m2m_objs
+
+# 复选 框内容已选中数据
+@register.simple_tag
+def get_m2m_chosen_objs(admin_obj, field_name, obj):
+    """
+    返回已选中的列表
+    :param admin_obj:
+    :param field_name:
+    :param obj: 数据对象
+    :return:
+    """
+    # print(["--->obj",obj])
+    if obj.id:
+        return getattr(obj, field_name).all()  # 返回所有的内容
+    return [] 

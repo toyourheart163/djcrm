@@ -8,8 +8,11 @@
         <li><a href="/king_admin/">主页</a></li>
         <li><a href="/king_admin/{% get_app_name admin_obj.model %}/">{% get_app_name admin_obj.model %}</a></li>
         <li class="active">{% get_model_verbose_name admin_obj.model%}</li>
-        <a href="{{ request.path }}add/" class="btn btn-sm btn-success pull-right">+添加 {% get_model_verbose_name admin_obj.model%} </a>
-    
+        {% if not admin_obj.readonly_table %}
+            <a href="{{ request.path }}add/" class="btn btn-sm btn-success pull-right">+添加 {% get_model_verbose_name admin_obj.model%} </a>
+        {% else%}
+            <a href='#' class="btn btn-sm btn-success pull-right" style='color: #ff0003'>只读状态</a>
+        {% endif %}
     </ol>
     </div>
 

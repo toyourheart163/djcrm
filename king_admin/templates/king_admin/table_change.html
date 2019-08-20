@@ -1,26 +1,55 @@
-{% extends "king_admin/king_index.html" %}
+{#table_change.html#}
+{## ————————19PerfectCRM实现King_admin数据修改————————#}
+{#{% extends "king_master/king_index.html" %}#}
+{##}
+{#{% load kingadmin_tags %}#}
+{#{% block right-container-content %}#}
+{##}
+{#      {{ obj_form }}#}
+{##}
+{#{% endblock %}#}
+{## ————————19PerfectCRM实现King_admin数据修改————————#}
 
-{% load kingadmin_tags %}
+{## ————————20PerfectCRM实现King_admin数据修改美化————————#}
+{% extends 'king_admin/king_index.html' %}   {#继承模板#}
+{% load kingadmin_tags %} {#通过自己定义标签获取中文，Django中利用filter与simple_tag为前端自定义函数的实现方法#}
+
+
+
+
 {% block right-container %}
-    <div class="row" style="margin-bottom: 20px">
+    <div class="row" style="margin-bottom: 20px" >
         <ol class="breadcrumb">
-            <li><a href="/king_admin/">主页</a></li>
-            <li><a href="/king_admin/{% get_app_name admin_obj.model %}/">{% get_app_name admin_obj.model %}</a></li>
-            <li><a href="/king_admin/{% get_app_name admin_obj.model %}/{% get_model_name admin_obj.model %}/">
+          <li><a href="/king_admin/">主页</a></li>
+          <li><a href="/king_admin/{% get_app_name admin_obj.model %}/">{% get_app_name admin_obj.model %}</a></li>
+          <li><a href="/king_admin/{% get_app_name admin_obj.model %}/{% get_model_name admin_obj.model %}/">
                 {% get_model_verbose_name admin_obj.model %} </a></li>
             {% if not admin_obj.is_add_form %} {#  新建时 ForeignKey不能实例化 #}
-                <li class="active">{{ obj_form.instance }}</li>  {#  修改时 实例化 #}
+               <li class="active">{{ obj_form.instance }}</li>  {#  修改时 实例化 #}
             {% endif %}
         </ol>
-        <h4>修改：{% get_model_verbose_name admin_obj.model %}</h4>
+         {## ————————25PerfectCRM实现King_admin添加出错修复————————#}
+{#        <h4>修改：{% get_model_verbose_name admin_obj.model  %}</h4>#}
+
+        {% block Tops %}
+            <div class="panel panel-info">
+                <h4 style='color: red'>修改： {% get_model_verbose_name admin_obj.model %}</h4>
+            </div>
+        {% endblock %}
+         {## ————————25PerfectCRM实现King_admin添加出错修复————————#}
     </div>
 
-    <div class="row">
-        {{ obj_form.errors }}
+   <div class="row">
+        {{ obj_form.errors  }}
+
+        {## ————————27PerfectCRM实现King_admin编辑复选框————————#}
+        {#<form class="form-horizontal" method="post" >{% csrf_token %}#}
         <form class="form-horizontal" method="post" onsubmit="return BeforeFormSubmit(this);">{% csrf_token %}
+        {## ————————27PerfectCRM实现King_admin编辑复选框————————#}
+        
             {% for field in obj_form %}
-                <div class="form-group">
-                    <label class="col-sm-2 " style="font-weight: normal"> {#字体#}
+                  <div class="form-group">
+                    <label  class="col-sm-2 " style="font-weight: normal"> {#字体#}
                         {% if field.field.required %}   {#required判断是不是必须填写#}
                             <b>{{ field.label }}</b>
                         {% else %}
@@ -28,24 +57,100 @@
                         {% endif %}
 
                     </label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-10" >
                         <span style="color: red;">{{ field.errors }}</span>
-                        {{ field }}
+
+
+
+                        {## ————————27PerfectCRM实现King_admin编辑复选框————————#}
+{#                            {{ field }}#}
+                        {% if field.name in admin_obj.filter_horizontal %} <!-- 水平--><!--     判断是否复选框-->
+                            {% get_m2m_chosen_objs admin_obj field.name obj_form.instance as m2m_chosen_objs %} <!--当前对象已经选中的字段名-->
+                            <!--    左边待选框-->
+                            <div class="col-md-6">
+                            <!--    取所有的内容-->
+                                {% get_m2m_available_objs admin_obj field.name as m2m_available_objs %}
+{#                                <input type="text" oninput="FuzzSearch(this,'id_{{ field.name }}_from')" class="form-control">#}
+                            <!--                                   字段名-->
+                                <select multiple field_name="{{ field.name }}" class="form-control filter-select-box" id="id_{{ field.name }}_from" >
+                                    <!-- 字段名 是否为不能修改-->
+                                    {% if field.name in admin_obj.readonly_fields and not admin_obj.is_add_form %}
+                                        {% for obj in m2m_available_objs  %}
+                                            {% if obj not in m2m_chosen_objs %}<!--不在当象已经选中的字段名 才显示-->
+                                                <option value="{{ obj.id }}" disabled>{{ obj }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for obj in m2m_available_objs %}
+                                            {% if obj not in m2m_chosen_objs %}<!--不在当象已经选中的字段名 才显示-->
+                                                <option value="{{ obj.id }}" ondblclick="MoveEleTo(this,'id_{{ field.name }}_to')">{{ obj }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+                            <!--    中间箭头-->
+                            <div class="col-md-1">
+                                <div><h4 style='color: #00ff06'>待选 ->  </h4></div>
+                                <div><h4 style='color: #8dffc5'>双击选择 </h4></div>
+                                <div><h4 style='color: #ff0003'> <- 已选 </h4></div>
+                            </div>
+
+                            <!--    右边已选框-->
+                            <div class="col-md-5">
+                                <select m2m_right="yes" name="{{ field.name }}" multiple field_name="{{ field.name }}" class="form-control" id="id_{{ field.name }}_to">
+                                    {% if field.name in admin_obj.readonly_fields and not admin_obj.is_add_form %}
+                                        {% for obj in m2m_chosen_objs %}
+                                         <option value="{{ obj.id }}" disabled>{{ obj }}</option>
+                                        {% endfor %}
+                                    {% else %}
+
+                                        {% for obj in m2m_chosen_objs %}
+                                            <option value="{{ obj.id }}" ondblclick="MoveEleTo(this,'id_{{ field.name }}_from')">{{ obj }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+
+                            </div>
+
+                        {% else %}
+                            {{ field }} <span style="color: #bce8f1"> {{ field.help_text }}</span>
+{#                            <span style="color:red">{{ field.errors }}</span>#}
+                        {% endif %} <!--     判断是否复选框-->
+                        {## ————————27PerfectCRM实现King_admin编辑复选框————————#}
+
+
+
+                    </div>
+                  </div>
+            {% endfor %}
+
+            {## ————————25PerfectCRM实现King_admin添加出错修复————————#}
+            {## ————————23PerfectCRM实现King_admin数据删除————————#}
+{#            <a class="btn btn-danger" href="{% url 'table_delete' app_name model_name obj_form.instance.id %}">删除</a>#}
+           {## ————————23PerfectCRM实现King_admin数据删除————————#}
+{#            <input type="submit" value="保存" class="pull-right btn btn-info" >   {#放右边#}
+
+            {% if not admin_obj.readonly_table %}
+                <div class="form-group">
+                    {% block del %}
+                        <div class="col-sm-2">
+                            <a class="btn btn-danger" href="{% url 'table_delete' app_name model_name obj_form.instance.id %}">删除</a>
+                        </div>
+                    {% endblock %}
+                    <div class="col-sm-10">
+                        <input type="submit" value="保存" class="pull-right btn btn-info">
                     </div>
                 </div>
-            {% endfor %}   
-            <div class="form-group">
-                {% block del %}
-                    <div class="col-sm-2">
-                        <a class="btn btn-danger" href="{% url 'table_delete' app_name model_name obj_form.instance.id %}">删除</a>
-                    </div>
-                {% endblock %}
-                <div class="col-sm-10">
-                    <input type="submit" value="保存" class="pull-right btn btn-info">
+            {% else%}
+                <div class="form-group">
+                    <h3 style='color: #ff0003'>温馨提示：本张表现在为只读状态，不可以编辑！</h3>
                 </div>
-            </div>         
+            {% endif %}
+            {## ————————25PerfectCRM实现King_admin添加出错修复————————#}
+
         </form>
-    </div>
+   </div>
 {% endblock %}
 {## ————————20PerfectCRM实现King_admin数据修改美化————————#}
 
