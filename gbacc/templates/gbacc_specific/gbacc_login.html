@@ -1,0 +1,62 @@
+{#gbacc_login.html#}
+{## ————————38PerfectCRM实现全局账号登录注销————————#}
+{% extends "gbacc_master/gbacc_sample.html" %}
+{% block right-container-content %}
+
+    <div class="container col-lg-offset-3">
+      <form class="form-signin col-lg-3 pu" method="post">{% csrf_token %}
+        <h2 class="form-signin-heading">CRM 登陆</h2>
+        <label for="inputEmail" class="sr-only col-sm-2">邮箱账号</label>
+
+
+        {## ————————39PerfectCRM实现登录+验证码+过期时间+页面保留账号————————#}
+{#        <input type="email" name="email" id="inputEmail" class="form-control" placeholder="邮箱账号" required="" autofocus=""  >#}
+        <input type="email" name="email" id="inputEmail" class="form-control" placeholder="邮箱账号"
+               required="" autofocus="" value ={% if email %}{{ email }}{% else %}{{ '' }}{% endif %} >
+        {## ————————39PerfectCRM实现登录+验证码+过期时间+页面保留账号————————#}
+      
+
+        <label for="inputPassword" class="sr-only col-sm-2">密码</label>
+        <input type="password" name="password" id="inputPassword" class="form-control" placeholder="密码" required="">
+
+
+        {## ————————39PerfectCRM实现登录+验证码+过期时间+页面保留账号————————#}
+        <div class="form-group">
+            <div class="row">
+                <div class="col-xs-7">
+                    <input type="text" class="form-control" id="check_code" name="check_code" placeholder="请输入验证码">{{ obj.errors.pwds }}
+                </div>
+                <div class="col-xs-5">
+                    <img id="check_code_img" src="/gbacc/check_code.html/" onclick="changeCheckCode(this);"> {## 配置URL绝对路径#}{## 绑定JS刷新验证码图片#}
+                </div>
+            </div>
+        </div>
+        {## ————————39PerfectCRM实现登录+验证码+过期时间+页面保留账号————————#}
+
+
+        {% if errors %}
+            <span style="color: #761c19">{{ errors.error }}</span>
+        {% endif %}
+          <div class="checkbox">
+          <label><input type="checkbox" value="remember-me"> 记住账号 </label>
+        </div>
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit">登陆</button>
+      </form>
+    </div>
+
+
+{## ————————39PerfectCRM实现登录+验证码+过期时间+页面保留账号————————#}
+<script>
+     //刷新验证码
+     function changeCheckCode(ths){
+            ths.src = ths.src +  '?';
+     }
+</script>
+{## ————————39PerfectCRM实现登录+验证码+过期时间+页面保留账号————————#}
+
+
+{% endblock %}
+{## ————————38PerfectCRM实现全局账号登录注销————————#}
+
+{#gbacc_login.html#}

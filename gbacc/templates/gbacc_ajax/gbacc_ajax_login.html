@@ -1,0 +1,68 @@
+{#gbacc_ajxa_login.html#}
+{## ————————43PerfectCRM实现AJAX全局账号登陆————————#}
+{% extends "gbacc_master/gbacc_sample.html" %}
+
+{% load staticfiles %}
+
+{% block right-container-content %}
+    <div class="container col-lg-offset-3">
+        <form class="form-signin col-lg-3 pu" method="post" id="fm"
+              action="gbacc_ajax_login.html">{% csrf_token %}
+            <h2 class="form-signin-heading">CRM 登陆 AJAX</h2>
+            <div class="form-group">
+                <label for="inputEmail" class="sr-only col-sm-2">邮箱账号</label>
+                <input type="email" name="email" id="inputEmail" class="form-control" placeholder="邮箱账号" required=""
+                       autofocus="">
+                <div class="alert alert-danger hide">
+                    <span id="spemail"></span> {# ajax 验证#}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword" class="sr-only col-sm-2">密码</label>
+                <input type="password" name="password" id="inputPassword" class="form-control" placeholder="密码"
+                       required="">
+                <div class="alert alert-danger hide">
+                    <span id="sppwd"></span> {# ajax 验证#}
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="text">验证码</label>
+                <div class="row">
+                    <div class="col-xs-7">
+                        <input type="text" class="form-control" id="check_code" name="check_code"
+                               placeholder="请输入验证码">{{ obj.errors.pwds }}
+                    </div>
+                    <div class="col-xs-5">
+                        <img id="check_code_img" src="/gbacc/check_code.html/" onclick="loginchangeCheckCode(this);">
+                        {## 配置URL绝对路径#}{## 绑定JS刷新验证码图片#}
+                    </div>
+                </div>
+                <div class="col-xs-9" style="padding-left: 0;">
+                    <div class="alert alert-danger hide">
+                        <span style="padding: 0 5px 0 5px;display: inline-block;font-size: 14px">
+                            <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                        </span>
+                        <span id="error_msg" style="font-size: 12px;"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="checkbox">
+                <label><input type="checkbox" value="remember-me"> 记住账号 </label>
+            </div>
+            <div class="col-xs-6">
+                <a id="submit" class="btn btn-lg btn-primary btn-block">登陆</a>
+            </div>
+
+        </form>
+    </div>
+{% endblock %}
+
+{% block js %}{#自定义内容 js#}
+    <script src="{% static 'js/gbacc_ajax_login_js.js' %}"></script>  {#登陆JS事件#}
+{% endblock %}
+{## ————————43PerfectCRM实现AJAX全局账号登陆————————#}
+
+{#gbacc_ajxa_login.html#}

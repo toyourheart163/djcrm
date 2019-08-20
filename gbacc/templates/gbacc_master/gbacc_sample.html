@@ -1,0 +1,73 @@
+{# gbacc_sample.thml  #}
+{## ————————38PerfectCRM实现全局账号登录注销————————#}
+{% extends "gbacc_master/gbacc_base.html" %}
+{% block body %}{#自定义内容开始 body#}
+    {% block nav-bar %}{#自定义内容开始 上面导航栏#}
+    <nav class="navbar navbar-inverse navbar-fixed-top"> 
+          <div class="container-fluid">
+                <div class="navbar-header">
+                  <a class="navbar-brand" href="#">全局账号</a>
+                 </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                      <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#">主页</a></li>
+                        <li><a href="/admin/"> admin首页</a></li>
+                        <li><a href="/king_admin/"> KingAdmin首页</a></li>
+                        <li class="dropdown">
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+                                 role="button" aria-haspopup="true" aria-expanded="false">
+                                  当前用户：{{ request.user.name }}
+                                  <span class="caret"></span>
+                              </a>
+                              <ul class="dropdown-menu">
+                                <li><a href="{% url 'gbacc_logout' %}">注销</a></li>
+                                <li><a href="#">修改密码</a></li>
+                                <li><a href="#">个人中心</a></li>
+                              </ul>
+                        </li>
+                        <li><a href="/gbacc/gbacc_login/">登陆</a></li>
+                        <li><a href="#">注册</a></li>
+                        <li><a href="#"> 设置</a></li>
+                        <li><a href="#"> 更多</a></li>
+                        <li><a href="#"> &emsp;&nbsp;&ensp;&thinsp;</a></li>
+                      </ul>
+                </div>
+          </div>
+    </nav>
+    {% endblock %}{#自定义内容结束 nav-bar上面导航栏#}
+
+    <div class="container-fluid">
+        <div class="row">
+
+             {% block side-bar %}{#自定义内容开始 左边菜单#}
+                <div class="col-sm-3 col-md-2 sidebar">
+                  <ul class="nav nav-sidebar"> {#JS绑定  base.html#}
+                    {% block side-bar-menus %}{#自定义内容开始 左边菜单#}
+
+                      <h4>历史记录：</h4>
+
+                    {% endblock %} {#自定义内容结束 side-bar-menus左边菜单#}
+                  </ul>
+                </div>
+             {% endblock %}{#自定义内容结束 side-bar左边菜单#}
+
+            {% block right-container %} {#自定义内容开始 右边页面#}
+                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                      {% block right-container-content %} {#自定义内容开始 右边页面内容#}
+                          <div class="row placeholders">
+                                <div class="col-xs-6 col-sm-3 placeholder">
+                                    <h4>右边页面内容：</h4>
+                                </div>
+                          </div>
+                      {% endblock %}{#自定义内容结束 right-container-content右边页面内容#}
+                 </div>
+            {% endblock  %} {#自定义内容结束 right-container右边页面#}
+
+        </div>
+    </div>
+{% endblock %}
+{#自定义内容结束 body#}
+
+{## ————————38PerfectCRM实现全局账号登录注销————————#}
+
+{# gbacc_sample.thml #}

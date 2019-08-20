@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'crm',
     'king_admin',
     'DBadd',
+    'gbacc',
 ]
 
 MIDDLEWARE = [
@@ -128,3 +129,4 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR,'king_admin/static'),]
 AUTH_USER_MODEL = 'crm.UserProfile'
+LOGIN_URL = '/gbacc/gbacc_login/'

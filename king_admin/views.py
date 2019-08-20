@@ -3,6 +3,7 @@ import json
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from  django.contrib.auth.decorators import login_required
 
 from .app_config import kingadmin_auto_discover
 from .base_admin import site
@@ -28,7 +29,8 @@ def filter_querysets(request,queryset):
             condtions[k] = v
     query_res = queryset.filter(**condtions)
     return query_res,condtions
-
+    
+@login_required
 def table_data_list(request,app_name,model_name):
     #通过2个参数到base_admin里获取class AdminRegisterException(Exception): 的对象
     admin_obj = site.registered_sites[app_name][model_name]  #base_admin
@@ -70,7 +72,6 @@ def get_orderby(request,queryset):
         return  queryset.order_by(orderby_key)
     return  queryset
 
-
 def get_queryset_search_result(request,queryset,admin_obj):
     search_key = request.GET.get("_q", "")#取定义名,默认为空
     q_obj = Q()#多条件搜索 #from django.db.models import Q
@@ -80,6 +81,7 @@ def get_queryset_search_result(request,queryset,admin_obj):
     res = queryset.filter(q_obj) #对数据库进行条件搜索
     return res
 
+@login_required
 def table_change(request,app_name,model_name,obj_id):
     admin_obj = site.registered_sites[app_name][model_name]   #获取表对象
                 #kingadmin/forms.py里def CreateModelForm(request,admin_obj):
@@ -101,10 +103,12 @@ def table_change(request,app_name,model_name,obj_id):
 
     return render(request,"king_admin/table_change.html",locals())
 
+@login_required
 def table_index(request,app_name):
     bases = site.registered_sites[app_name]#取出对应app对象
     return render(request, 'king_admin/table_index.html', {"site":bases,'app_name':app_name})
 
+@login_required
 def table_add(request,app_name,model_name):
     admin_obj = site.registered_sites[app_name][model_name]  #获取表对象
     model_form = forms.CreateModelForm(request,admin_obj=admin_obj) ##modelform 生成表单 加验证
@@ -131,6 +135,7 @@ def table_add(request,app_name,model_name):
             return  redirect("/king_admin/%s/%s/" % (app_name,model_name))
     return render(request, "king_admin/table_add.html", locals())
 
+@login_required
 def table_delete(request,app_name,model_name,obj_id):
     admin_obj = site.registered_sites[app_name][model_name]#表类
     objs=admin_obj.model.objects.filter(id=obj_id)#类的对象
@@ -144,6 +149,7 @@ def table_delete(request,app_name,model_name,obj_id):
         return redirect("/king_admin/%s/%s/" % (app_name,model_name))#转到列表页面
     return render(request, "king_admin/table_delete.html", locals())#locals 返回一个包含当前范围的局部变量字典。
 
+@login_required
 def password_reset(request,app_name,model_name,obj_id):
     admin_obj = site.registered_sites[app_name][model_name]#表类
     model_form = forms.CreateModelForm(request,admin_obj=admin_obj)#modelform 生成表单 加验证
@@ -163,5 +169,6 @@ def password_reset(request,app_name,model_name,obj_id):
             errors['invalid_password']='两次输入的密码不一样'#密码不一致
     return render(request, "king_admin/password_reset.html", locals())
 
+@login_required
 def password_add(request,app_name,model_name):
     return redirect("/king_admin/%s/%s/add/" % (app_name, model_name))
