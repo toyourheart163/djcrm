@@ -1,6 +1,7 @@
 # forms.py
 # ————————19PerfectCRM实现King_admin数据修改————————
 from django import forms
+
 from crm import models
 
 # class CustomerModelForm(forms.ModelForm):
@@ -63,6 +64,3 @@ def CreateModelForm(request,admin_obj):
     setattr(dynamic_model_form,"clean",default_clean)  #给所有的form默认加一个 clean  验证
     # ————————28PerfectCRM实现King_admin编辑限制———————
     return dynamic_model_form
-# ————————19PerfectCRM实现King_admin数据修改————————
-
-# forms.py

@@ -1,0 +1,72 @@
+{#enrollment.html#}
+{## ————————47PerfectCRM实现CRM客户报名流程————————#}
+{% extends 'crm/bpm_sample.html' %}<!--继承后台主页-->
+{% block right-container-content %} {#自定义内容开始 右边页面内容#}
+    <div class="panel panel-info">
+        <h4>学员报名：</h4>
+    </div>
+    <div id="content">
+        <form action="" class="form-horizontal col-lg-5" role="form" method="post">{% csrf_token %}
+            <span class="errors" style="color: #ff1900">{{ enroll_form.errors }}</span>{#错误信息#}
+            <div class="form-group">
+                <label for="inputeEmail4" class="col-sm-3">客户名字：</label>
+                <div class="col-sm-6"> {{ customer_obj.name }} </div>
+            </div>
+            <div class="form-group">
+                <label for="inputeEmail4" class="col-sm-3">客户QQ:</label>
+                <div class="col-sm-6">{{ customer_obj.qq }} </div>
+            </div>
+            <div class="form-group">
+                <label for="inputeEmail4" class="col-sm-3">手机号码：</label>
+                <div class="col-sm-6"> {{ customer_obj.phone }} </div>
+            </div>
+            <div class="form-group">
+                <label for="inputeEmail4" class="col-sm-3">咨询课程：</label>
+                <div class="col-sm-6"> {{ customer_obj.consult_courses }} </div>
+            </div>
+            <div class="form-group">
+                <label for="inputeEmail4" class="col-sm-3">咨询顾问：</label>
+                <div class="col-sm-6"> {{ customer_obj.consultant }} </div>
+            </div>
+
+
+            {% for field in enroll_form %}
+                <div class="form-group">
+                    <label for="inputeEmail4" class="col-sm-3">{{ field.label }}:</label>
+                    <div class="col-sm-6">                        {{ field }}        </div>
+                </div>
+            {% endfor %}
+            <div class="form-group">
+                <label for="inputeEmail4" class="col-sm-3">报名课程顾问：</label>
+                <div class="col-sm-6"> {{ request.user.name }} </div>
+            </div>
+            <div class="form-group">
+                <label for="inputeEmail4" class="col-sm-3">客户邮箱：</label>
+                <div class="col-sm-6"><input type="email" name="email" placeholder="邮箱账号"></div>
+                {% if stmp_mail %}
+                    <span style="color: #ff1900">{{ stmp_mail.ok }}</span>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="inputeEmail4" class="col-sm-3">上次发送邮箱：</label>
+                <div class="col-sm-6"> {% if email %}{{ email }}{% else %}{{ '' }}{% endif %} </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-info pull-right" value="生成链接>>发送邮件>>下一步">
+            </div>
+        </form>
+
+        <div>
+            {% for k,v in msgs.items %}  {#链接#}
+                <h4 style="color: #1cff00">请将此链接发给客户进行填写(与自己的ID无关)：</h4>
+                <h3><a target="_blank" href="{{ v }}">{{ v }}</a></h3>
+                {% if stmp_mail %}
+                    <div style="color: #ff1900">{{ stmp_mail.ok }}</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+{## ————————47PerfectCRM实现CRM客户报名流程————————#}
+
+{#enrollment.html#}

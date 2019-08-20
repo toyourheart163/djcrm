@@ -102,6 +102,7 @@ admin.site.register(models.Branch)                  #01校区表
 admin.site.register(models.ClassList)               #02班级表
 admin.site.register(models.Course)                  #03课程表，可以报名那些课程
 admin.site.register(models.Customer, CustomerAdmin)                #04客户信息表
+admin.site.register(models.ContractTemplate)
 admin.site.register(models.CustomerFollowUp)        #05客户跟进表
 admin.site.register(models.Enrollment)              #06学员报名信息表
 admin.site.register(models.Payment)                 #07缴费记录表

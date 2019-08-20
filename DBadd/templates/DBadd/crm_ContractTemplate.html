@@ -1,0 +1,35 @@
+{#crm_ContractTemplate.html#}
+{## ————————48PerfectCRM实现CRM客户报名流程学生合同————————#}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+            <h3>添加合同</h3>
+
+            <form method="POST" action="/DBadd/crm_ContractTemplate/">
+                 {% csrf_token %}
+                <input type="submit"value="添加"/>
+            </form>
+
+            <h3>合同详细</h3>
+            <ul>
+                {% for row in user_list %}
+                    <li>
+
+                        <a>{{row.id}}-{{row.name}}</a>
+                        <hr>
+                        <pre>{{row.template}}</pre>
+                    </li>
+                {% endfor %}
+            </ul>
+
+
+</body>
+</html>
+
+{## ————————48PerfectCRM实现CRM客户报名流程学生合同————————#}
+
+{#crm_ContractTemplate.html#}

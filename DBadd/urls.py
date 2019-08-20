@@ -8,4 +8,5 @@ urlpatterns = [
     path('crm_UserProfile/', crm_views.crm_UserProfile),#账号表 #随机学生
     path('crm_userprofile_roles/', crm_views.crm_userprofile_roles),#账号角色关联表 #随机学生
     path('crm_Customer/', crm_views.crm_Customer),  # 04客户信息表
+    path('crm_ContractTemplate/', crm_views.crm_ContractTemplate),
 ]

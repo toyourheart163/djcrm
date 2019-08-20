@@ -20,6 +20,8 @@ class ClassList(models.Model):
     branch = models.ForeignKey("Branch",on_delete=models.CASCADE)#校区    关联到  校区表
     course = models.ForeignKey("Course",on_delete=models.CASCADE) #课程   关联到   课程表
 
+    contract = models.ForeignKey('ContractTemplate', blank=True, null=True, default=1,on_delete=models.CASCADE)  # 合同表
+
     class_type_choices = ( #上课形式
                           (0,'面授(脱产)'),
                           (1,'面授(周末)'),
@@ -62,6 +64,11 @@ class Customer(models.Model):
     qq_name = models.CharField(max_length=64,blank=True,null=True)#QQ名 #CharField定长文本 #名字最长64 # Django可空 #数据库可以为空
     phone = models.CharField(max_length=64,blank=True,null=True)#手机号 #CharField定长文本 #名字最长64 # Django可空 #数据库可以为空
 
+    id_num=models.CharField(max_length=64,blank=True,null=True,verbose_name='身份证号')#身份证号
+    email=models.EmailField(max_length=64,blank=True,null=True,verbose_name='邮箱')#email
+    sex_choices=((0,'保密'),(1,'男'),(2,'女'))
+    sex=models.SmallIntegerField(choices=sex_choices,default=0,verbose_name='性别')
+
     source_choices = ( #客户渠道来源 （内存生成）
                       (0,'转介绍'),
                       (1,'QQ群'),
@@ -97,6 +104,16 @@ class Customer(models.Model):
 
     class Meta:#通过一个内嵌类 "class Meta" 给你的 model 定义元数据
         verbose_name_plural =  "04客户表" #verbose_name_plural给你的模型类起一个更可读的名字
+
+#合同模版
+class ContractTemplate(models.Model):
+    name=models.CharField('合同名称',max_length=64,unique=True)
+    template=models.TextField()
+
+    def __str__(self):
+        return self.name
+    class Meta:
+        verbose_name_plural='合同表'
 
 """05客户跟进表"""
 class CustomerFollowUp(models.Model):
@@ -143,6 +160,7 @@ class Enrollment(models.Model):
 
     def __str__(self):#__str__()是Python的一个“魔幻”方法，这个方法定义了当object调用str()时应该返回的值。
         return "%s %s" %(self.customer,self.enrolled_class)#返回#格式化字符串#学员名字#所报班级
+        
     class Meta:#通过一个内嵌类 "class Meta" 给你的 model 定义元数据
         unique_together =  ("customer","enrolled_class")#联合索引
         verbose_name_plural =  "06学员报名信息表"#verbose_name_plural给你的模型类起一个更可读的名字

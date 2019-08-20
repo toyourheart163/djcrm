@@ -1,0 +1,107 @@
+{#stu_registration.html#}
+{## ————————48PerfectCRM实现CRM客户报名流程学生合同————————#}
+{% extends 'crm/bpm_sample.html' %}
+{% load bpm_tags %}
+{% block right-container-content %} {#自定义内容开始 右边页面内容#}
+    <div class="container col-lg-7 col-md-offset-2">
+        <div class="panel panel-warning">
+            <div class=" panel-heading">
+                <h3 class="panel-title container">报名入学｜信息填写</h3>
+            </div>
+            <div class="panel-body ">                           <!--返回提交函数-->
+                {% if status != 1 %}
+                    <span class="errors">{{ customer_form.errors }}</span><!--错误提示-->
+                    {## ————————49PerfectCRM实现CRM客户报名流程学生合同表单验证————————#}
+                    {## ————————49PerfectCRM实现CRM客户报名流程学生合同表单验证————————#}
+                    {#                <form method="post" class="form-horizontal" role="form">{% csrf_token %}#}
+                    <form method="post" class="form-horizontal" role="form"
+                          onsubmit="return RegisterFormCheck()">{% csrf_token %}
+                        {## ————————49PerfectCRM实现CRM客户报名流程学生合同表单验证————————#}
+                        {% for foo in customer_form %}
+                            <div class="form-group">
+                                <label for="inputEmail3" class="col-sm-2 control-label">{{ foo.label }}</label>
+                                <div class="col-sm-8">
+                                    {{ foo }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <hr>
+                        {#返回06学员报名信息表的数据#}
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label">所报班级</label>
+                            <div class="col-sm-8">
+                                {{ enroll_obj.enrolled_class }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label">课程费用</label>
+                            <div class="col-sm-8">
+                                {{ enroll_obj.enrolled_class.course.price }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label">开课日期</label>
+                            <div class="col-sm-8">
+                                {{ enroll_obj.enrolled_class.start_date }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label">合同</label>
+                            <div class="col-sm-10">
+                                <div style="width: 550px">
+                                    <pre style="height: 300px">{% render_enrolled_contract enroll_obj %}  </pre>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <input type="checkbox" value="{{ enroll_obj.contract_agreed }}" name="contract_agreed"
+                                       checked>
+                                我已经认真阅读完协议并接受所有条款
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <input type="submit" class="btn btn-info" value="提交">
+                        </div>
+                    </form>
+                 {## ————————49PerfectCRM实现CRM客户报名流程学生合同表单验证————————#}
+                {% else %}
+                    <h3>报名成功，同合进入审核流程，感谢您的选择！</h3>
+                {% endif %}
+                {## ————————49PerfectCRM实现CRM客户报名流程学生合同表单验证————————#}
+            </div>
+            <div class="panel-footer">
+                <input type="button" class="btn btn-danger right" value="关闭" onclick="CloseWebPage()">
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        function CloseWebPage() {
+            if (confirm("您确定要关闭本页吗？")) {
+                window.opener = null;
+                window.open('', '_self');
+                window.close();
+            }
+            else {
+            }
+        }
+
+        function RegisterFormCheck() {
+            if ($('form :checkbox').prop("checked")) {
+                $("form").find("[disabled]").removeAttr("disabled");//移除不可修改 便于提交表单  #qq
+                return true;
+            } else {
+                alert('请认真阅读并且同意条款，才可以报名');
+                return false;
+            }
+        }
+
+    </script>
+{% endblock %}
+{## ————————48PerfectCRM实现CRM客户报名流程学生合同————————#}
+
+{#stu_registration.html#}
