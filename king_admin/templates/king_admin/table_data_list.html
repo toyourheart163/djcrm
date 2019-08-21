@@ -72,8 +72,12 @@
                 <th><input type="checkbox" onclick="SelectALLObjs(this)"></th>
                 {% for column in admin_obj.list_display %}
                 <th>
-                    <a href="?_o={% get_orderby_key request  column %}{%  generate_filter_url admin_obj %}">{{ column }}</a>
-                    {% display_order_by_icon request column %}
+                    {% if column in admin_obj.column_not %}
+                        <a>{% verbose_name_set admin_obj column %}</a>
+                    {% else %}
+                        <a href="?_o={% get_orderby_key request column %}{% generate_filter_url admin_obj %}">{% verbose_name_set admin_obj column %}</a>
+                        {% display_order_by_icon request column %}
+                    {% endif %}
                 </th>
                 {% endfor %}
 

@@ -130,3 +130,14 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR,'king_admin/static'),]
 AUTH_USER_MODEL = 'crm.UserProfile'
 LOGIN_URL = '/gbacc/gbacc_login/'
+
+ENROLLED_DATA='%s/crm/static/enrolled_data'%BASE_DIR#证件上传 # 上传路径
+
+# send e-mail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  #email后端
+EMAIL_USE_TLS = False   #是否使用TLS安全传输协议
+EMAIL_USE_SSL = True    #是否使用SSL加密，qq企业邮箱要求使用
+EMAIL_HOST = 'smtp.sina.cn'   #发送邮件的邮箱 的 SMTP服务器       #根据情况重新配置
+EMAIL_PORT = 465                 #发件箱的SMTP服务器端口 #一般不需要修改465
+EMAIL_HOST_USER = 'perfectcrm@sina.cn'    #发送邮件的邮箱账号     #根据情况重新配置  #perfectcrm@sina.cn   pydjango@sina.cn
+EMAIL_HOST_PASSWORD = 'admin123456'         #发送邮件的邮箱密码    #根据情况重新配置

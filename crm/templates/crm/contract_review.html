@@ -1,0 +1,76 @@
+{#contract_review.html#}
+{## # ————————52PerfectCRM实现CRM客户报名流程学生合同审核————————#}
+{% extends 'crm/bpm_sample.html' %}
+{% load bpm_tags %}
+{% block right-container-content %} {#自定义内容开始 右边页面内容#}
+    <div class="container col-lg-7 col-md-offset-2">
+        <div class="panel panel-warning">
+            <div class=" panel-heading">
+                <h3 class="panel-title container">报名入学｜学员信息审核 | 合同审核人<a href="#" style="color: #ff1900">{{ request.user.name }}</a></h3>
+            </div>
+            <div class="panel-body "><!--返回提交函数-->
+                <div class="form-horizontal">
+                    {% for foo in customer_form %}
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label">{{ foo.label }}</label>
+                            <div class="col-sm-8"> {{ foo }}</div>
+                        </div>
+                    {% endfor %}
+
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label">课程名称</label>
+                        <div class="col-sm-8">
+                            {{ enroll_obj.enrolled_class }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label">课程费用</label>
+                        <div class="col-sm-8">
+                            {{ enroll_obj.enrolled_class.course.price }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label">开课日期</label>
+                        <div class="col-sm-8">
+                            {{ enroll_obj.enrolled_class.start_date }}
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="panel panel-warning">
+                    <div class=" panel-heading">
+                        <h3 class="panel-title container">学员证件｜身份证</h3>
+                    </div>
+                </div>
+                <div class="rest_left cad" style="width: 320px;height: 200px;  float: left">
+                    <a href="#">
+                        <img src="/static/enrolled_data/{{ enroll_id }}/{{ imgs_one }}" alt=""
+                             style="width: 320px;height: 200px;">
+                    </a>
+                </div>
+                <div class="rest_left cad" style="width: 320px;height: 200px;  float: right">
+                    <a href="#">
+                        <img src="/static/enrolled_data/{{ enroll_id }}/{{ imgs_two }}" alt=""
+                             style="width: 320px;height: 200px;">
+                    </a>
+                </div>
+                <div style="clear: both"></div>
+                <div class="panel panel-warning">
+                    <div class=" panel-heading">
+                        <h3 class="panel-title container">请认真审核后，通知相关人员！！！合同审核人<a href="#" style="color: #ff1900">{{ request.user.name }}</a></h3>
+                    </div>
+                </div>
+
+                <form action="" class="form-horizontal col-lg-5" role="form" method="post">{% csrf_token %}
+                    <a class="btn btn-danger" href="{% url 'enrollment_rejection' enroll_obj.id %}">驳回合同</a>
+                     <input class="btn btn-info pull-right" type="submit" value="审核通过">
+                </form>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{## # ————————52PerfectCRM实现CRM客户报名流程学生合同审核————————#}
+
+{#contract_review.html#}

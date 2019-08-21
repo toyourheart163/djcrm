@@ -69,6 +69,9 @@ class Customer(models.Model):
     sex_choices=((0,'保密'),(1,'男'),(2,'女'))
     sex=models.SmallIntegerField(choices=sex_choices,default=0,verbose_name='性别')
 
+    status_choices = ((0, '已报名'), (1, '未报名'), (2, '已退学'))
+    status = models.SmallIntegerField(choices=status_choices, default=1)  # 学员状态
+
     source_choices = ( #客户渠道来源 （内存生成）
                       (0,'转介绍'),
                       (1,'QQ群'),
@@ -151,10 +154,12 @@ class Enrollment(models.Model):
     enrolled_class = models.ForeignKey("ClassList",verbose_name="所报班级",on_delete=models.CASCADE)#关联到  班级表
     consultant = models.ForeignKey("UserProfile",verbose_name="课程顾问",on_delete=models.CASCADE) #关联到  账号表
 
+    contract_review = models.CharField(max_length=256, blank=True, null=True, verbose_name='合同审核')
     #BooleanField布尔值类型#default=False默认(True)不允许出现空字符#verbose_name是Admin中显示的字段名称
     contract_agreed = models.BooleanField(default=False,verbose_name="学员已经同意合同")#学员看合同
     contract_approved = models.BooleanField(default=False,verbose_name="合同已经审核") #谁审核
-
+    
+    Pay_cost= models.BooleanField(default=False,verbose_name="缴费") #缴费状态#是不是交定金
     # DateTimeField日期+时间格式 YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ] #auto_now_add创建时间（只读）
     date = models.DateTimeField(auto_now_add=True)#创建时间（数据库自增）
 

@@ -28,8 +28,6 @@
                 <label for="inputeEmail4" class="col-sm-3">咨询顾问：</label>
                 <div class="col-sm-6"> {{ customer_obj.consultant }} </div>
             </div>
-
-
             {% for field in enroll_form %}
                 <div class="form-group">
                     <label for="inputeEmail4" class="col-sm-3">{{ field.label }}:</label>
@@ -40,6 +38,7 @@
                 <label for="inputeEmail4" class="col-sm-3">报名课程顾问：</label>
                 <div class="col-sm-6"> {{ request.user.name }} </div>
             </div>
+
             <div class="form-group">
                 <label for="inputeEmail4" class="col-sm-3">客户邮箱：</label>
                 <div class="col-sm-6"><input type="email" name="email" placeholder="邮箱账号"></div>
@@ -52,6 +51,11 @@
                 <div class="col-sm-6"> {% if email %}{{ email }}{% else %}{{ '' }}{% endif %} </div>
             </div>
             <div class="form-group">
+
+                {## ————————52PerfectCRM实现CRM客户报名流程学生合同审核————————#}
+                <a target="_blank" class="btn btn-danger pull" href={% url 'not_audit' %}>未审核列表</a>
+                {## ————————52PerfectCRM实现CRM客户报名流程学生合同审核————————#}
+
                 <input type="submit" class="btn btn-info pull-right" value="生成链接>>发送邮件>>下一步">
             </div>
         </form>

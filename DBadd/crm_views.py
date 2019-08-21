@@ -1,14 +1,16 @@
-from django.shortcuts import render
-from django.shortcuts import redirect
-from django.shortcuts import HttpResponse
-
-from crm import models
-from django.contrib.auth import models as auth_models
-
 # 随机字符串
 import random
 from random import choice
 
+from django.shortcuts import render
+from django.shortcuts import redirect
+from django.shortcuts import HttpResponse
+from django.contrib.auth import models as auth_models
+from faker import Faker
+
+from crm import models
+
+faker = Faker('zh-cn')
 
 # 添加"""基本数据"""
 def crm_Role(request):
@@ -77,28 +79,26 @@ def crm_UserProfile(request):
         return render(request, 'DBadd/crm_UserProfile.html', {'user_list': user_list})
     elif request.method == "POST":
         for i in range(50):
-
-            Rword = ''.join(''.join([chr(random.randint(0x4E00, 0x9FBF)) for i in range(3)]).split())  # 随机中文
-            n = Rword
-
-            a = models.UserProfile.objects.values("user_id").all()
-            e = auth_models.User.objects.values("id").all()
-            print('eeeee', e, type(e))
-            x = e.difference(a)
+            n = faker.name()
+            # a = models.UserProfile.objects.values("user_id").all()
+            # e = auth_models.User.objects.values("id").all()
+            # print('eeeee', e, type(e))
+            # x = e.difference(a)
             # for i in x:
             #     print('zzz', x, type(x))
 
             l = []
-            for i in x:
-                l.append(i['id'])
-            print('llll', l, type(l))
+            # for i in x:
+            #     l.append(i['id'])
+            # print('llll', l, type(l))
 
-            if len(l) == 0:
+            # if len(l) == 0:
+            if 0:
                 return HttpResponse('请添加 admin的用户后，再来添加。。。')
             else:
-                c = choice(l)
-                u = c
-                models.UserProfile.objects.create(name=n, user_id=u)
+                # c = choice(l)
+                # u = c
+                models.UserProfile.objects.create(name=n, email=faker.email())
         return redirect('/DBadd/crm_UserProfile/')
 
 
@@ -143,7 +143,7 @@ def crm_Customer(request):
         return render(request, 'DBadd/crm_Customer.html', {'user_list': user_list})
     elif request.method == "POST":
         for i in range(50):
-            Rword = ''.join(''.join([chr(random.randint(0x4E00, 0x9FBF)) for i in range(3)]).split())  # 随机中文
+            Rword = faker.name()
             r=random.randint(5,18)
             Num = "".join(random.choice("0123456789") for i in range(r))  # 随机数字 #保证qq的唯一性
             Cnum = "".join(random.choice("123456789") for i in range(1))  # 随机数字  #不能选择0

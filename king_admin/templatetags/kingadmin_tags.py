@@ -19,40 +19,84 @@ def get_app_name(model_obj):
     return model_obj._meta.app_label
 
 from django.utils.safestring import mark_safe #使用mark_safe函数标记后，django将不再对该函数的内容进行转义
+from django.core.exceptions import FieldDoesNotExist
 
 @register.simple_tag
 def build_table_row(admin_obj,obj):#通过kingadmin_tags在后台处理 再传到前端
     row_ele = "" #为了生成一整行返回前端
-    if admin_obj.list_display:#如果不为空，有在crm/kingadmin.py注册site.register(models.Customer,CustomerAdmin)
-        #循环所有 要显示 的字符串 进行反射 展示 字段
-        for index, column in enumerate(admin_obj.list_display): #循环base_admin里class BaseAdmin下list_display = ()
-            column_obj = obj._meta.get_field(column)#遍历获取  传进的参数对象
+    # ————————54PerfectCRM实现CRM客户报名链接————————
+    column_not=[]#表示不是表中字段列表
+    # ————————54PerfectCRM实现CRM客户报名链接————————
 
-            if column_obj.choices:#判断如果字段有choices属性
-                #获取choices的字符串（外健）
-                get_column_data = getattr(obj,"get_%s_display" % column) #反射，传进的参数对象，拼接字段
-                column_data = get_column_data()#函数，拿到数据
-            else:
-                column_data = getattr(obj, column)#反射，
-            # ————————10PerfectCRM实现King_admin日期优化————————
-            if type(column_data).__name__ == 'datetime':
-                column_data = column_data.strftime('%Y-%m-%d %H-%M-%S')
-            # ————————10PerfectCRM实现King_admin日期优化————————
-            if index == 0: #首列
-                # 生成一个链接 跳转到编辑页面        #Format参数是一个格式字符串(%s升级版)
-                td_ele = '''<td><a href="/king_admin/{app_name}/{model_name}/{obj_id}/change/">{column_data}</a> </td>'''\
-                            .format(app_name=admin_obj.model._meta.app_label,
-                                    model_name=admin_obj.model._meta.model_name,
-                                    obj_id=obj.id,
-                                    column_data=column_data)
-            else:
-                td_ele = '''<td>%s</td>''' % column_data  #把反射来的值 拼接字符串 生成<td>
+    if admin_obj.list_display:#如果不为空，有在crm/kingadmin.py注册site.register(models.Customer,CustomerAdmin)
+        # ————————19PerfectCRM实现King_admin数据修改————————
+        #循环所有 要显示 的字符串 进行反射 展示 字段
+        # for column in admin_obj.list_display: #循环base_admin里class BaseAdmin下list_display = ()
+        for index, column in enumerate(admin_obj.list_display):  # 转为列表取 下标 , 字段名
+        # ————————19PerfectCRM实现King_admin数据修改————————
+            # ————————54PerfectCRM实现CRM客户报名链接————————
+            try:  #获取表中的字段
+             # ————————54PerfectCRM实现CRM客户报名链接————————
+                column_obj = obj._meta.get_field(column)#遍历获取  传进的参数对象
+                if column_obj.choices:#判断如果字段有choices属性
+                    #获取choices的字符串（外健）
+                    get_column_data = getattr(obj,"get_%s_display" % column) #反射，传进的参数对象，拼接字段
+                    column_data = get_column_data()#函数，拿到数据
+                else:
+                    column_data = getattr(obj, column)#反射，
+                # ————————10PerfectCRM实现King_admin日期优化————————
+                if type(column_data).__name__ == 'datetime':
+                    column_data = column_data.strftime('%Y-%m-%d %H-%M-%S')
+                # ————————10PerfectCRM实现King_admin日期优化————————
+
+                # ————————19PerfectCRM实现King_admin数据修改————————
+                if index == 0: #首列
+                    # 生成一个链接 跳转到编辑页面        #Format参数是一个格式字符串(%s升级版)
+                    td_ele = '''<td><a href="/king_admin/{app_name}/{model_name}/{obj_id}/change/">{column_data}</a> </td>'''\
+                                .format(app_name=admin_obj.model._meta.app_label,
+                                        model_name=admin_obj.model._meta.model_name,
+                                        obj_id=obj.id,
+                                        column_data=column_data)
+                if column in admin_obj.colored_fields: #特定字段需要显示颜色 #如果admin_obj有配置colored_fields
+                    color_dic = admin_obj.colored_fields[column] #获取配置#字段名# 'status':{'已报名':"rgba(145, 255, 0, 0.78)",
+                    if column_data in color_dic: #如果#已报名#有在配置里
+                        td_ele = "<td style='background-color:%s'>%s</td>" % (color_dic[column_data],column_data) #颜色#已报名
+                    else:
+                        td_ele = "<td>%s</td>" % column_data
+
+                else:
+                    td_ele = '''<td>%s</td>''' % column_data
+                # td_ele = '''<td>%s</td>''' % column_data  #把反射来的值 拼接字符串 生成<td>
+                # ————————19PerfectCRM实现King_admin数据修改————————
+            # ————————54PerfectCRM实现CRM客户报名链接————————
+            except FieldDoesNotExist as e:  # 如果没有获取到
+                if hasattr(admin_obj, column):  # 从自定义的函数中取值
+                    column_func = getattr(admin_obj, column)
+                    admin_obj.instance = obj  # 对象加入
+
+                    column_not.append(column)  # 加入非表中字段列表,
+                    admin_obj.column_not = column_not  # 对象加入
+                    column_data = column_func()
+                    print('column_data', column_data)
+                    td_ele = '''<td>%s</td>''' % column_data
+            # ————————54PerfectCRM实现CRM客户报名链接————————
             row_ele += td_ele    #把 <td>  拼接到上面到空字符串
     else:
         row_ele +="<td>%s</td>" %obj  #把<td>拼接到上面到空字符串,crm/models.py里 def __str__(self):的返回值
     return mark_safe(row_ele) #使用mark_safe函数标记后，django将不再对该函数的内容进行转义
-# ————————09PerfectCRM实现King_admin显示注册表的内容————————
+# ————————54PerfectCRM实现CRM客户报名链接————————
+# ————————54PerfectCRM实现CRM客户报名链接————————
 
+##表中自定verbose_name列名
+@register.simple_tag
+def verbose_name_set(admin_obj,column):
+    try:
+        verbose_name=admin_obj.model._meta.get_field(column).verbose_name.upper()#获取别名
+        print(verbose_name,'verbose_name_set')
+        print(admin_obj.model._meta,'all')
+    except FieldDoesNotExist as e:
+        verbose_name=getattr(admin_obj,column).display_name.upper()
+    return verbose_name
 @register.simple_tag
 def generate_filter_url(admin_obj): #拼接URL
     url = ''

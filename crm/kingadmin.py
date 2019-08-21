@@ -14,7 +14,7 @@ site.register(models.UserProfile, UserProfileAdmin)
 
 #04客户信息表
 class CustomerAdmin(BaseAdmin):#定制Djanago admin
-    list_display = ('id', 'qq', 'source', 'consultant', 'content', 'date')  # 显示字段表头
+    list_display = ('id', 'qq', 'source', 'consultant', 'content', 'date','status','enroll')  # 显示字段表头
     list_per_page = 8
     list_filter = ('date', 'source','consultant','consult_courses',)
     search_fields = ('name', 'qq')
@@ -23,6 +23,22 @@ class CustomerAdmin(BaseAdmin):#定制Djanago admin
     filter_horizontal = ('tags',)
     readonly_fields = ('qq', 'consultant',)
     readonly_table = True
+
+    colored_fields = {
+        'status':{'已报名':"rgba(145, 255, 0, 0.78)",
+                  '未报名':"#ddd"},}
+
+    def enroll(self):
+        '''报名'''
+        print("customize field enroll",self)
+        link_name = "报名"
+        if self.instance.status == 0:
+            link_name = "报名新课程"
+        return '''<a target="_blank" class="btn-link" href="/crm/customer/%s/enrollment/">点击%s</a> ''' % (self.instance.id,link_name)
+                # url(r'^customer/(\d+)/enrollment/$', sales_views.enrollment, name="enrollment"),  # 客户招生#报名流程一 下一步
+                # target属性用于表示所链接文件打开到的位置 #记住，“”内的文字只是表示一个对象的名子。
+    
+    enroll.display_name = "报名链接"
 
     def default_form_validation(self,obj):
         print('validation:制定的',obj.cleaned_data)
@@ -52,5 +68,21 @@ class CustomerAdmin(BaseAdmin):#定制Djanago admin
                                 params={'field':'name',},
                             )
 
+# 06学员报名信息表
+class EnrollmentAdmin(BaseAdmin):  # 定制Djanago admin
+    list_display = ('id', 'customer', 'enrolled_class', 'consultant', 'Pay_cost', 'date', 'payment')  # 显示字段表头
+    colored_fields = {
+        'Pay_cost': {True: "rgba(145, 255, 0, 0.78)",
+                     False: "#ddd"}, }
+    def payment(self):
+        link_name = "增加缴费"
+        if self.instance.Pay_cost == False:
+            link_name = "缴费"
+        return '''<a target="_blank" class="btn-link"  href="/crm/payment/%s/" >点击%s</a> ''' % (self.instance.id, link_name)
+        # url(r'^payment/(\d+)/$', financial_views.payment, name="payment"),  # 报名流程四    缴费   #财务
+        # target属性用于表示所链接文件打开到的位置 #记住，“”内的文字只是表示一个对象的名子。
+    payment.display_name = "缴费链接"
+
+site.register(models.Enrollment, EnrollmentAdmin)  # 06学员报名信息表
 site.register(models.Customer,CustomerAdmin)
 site.register(models.CourseRecord)

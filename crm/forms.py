@@ -14,8 +14,6 @@ class EnrollmentForm(ModelForm):
         fields= ['enrolled_class']
 # ————————47PerfectCRM实现CRM客户报名流程————————
 
-
-# ————————48PerfectCRM实现CRM客户报名流程学生合同————————
 #报名学员填 写
 class CustomerForm(ModelForm):
     def __new__(cls, *args, **kwargs):
@@ -48,4 +46,12 @@ class CustomerForm(ModelForm):
         readonly_fields=['qq','consultant','source']#不可修改
 # ————————48PerfectCRM实现CRM客户报名流程学生合同————————
 
- # forms.py
+#缴费记录
+class PaymentForm(ModelForm):
+    def __new__(cls, *args, **kwargs):
+        for field_name,field_obj in cls.base_fields.items():
+            field_obj.widget.attrs['class'] = 'form-control'## 前端的样式
+        return ModelForm.__new__(cls)
+    class Meta:
+        model=models.Payment
+        fields='__all__'

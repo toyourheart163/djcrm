@@ -29,6 +29,7 @@ class BaseAdmin(object):#自定义方法
     readonly_fields = []
     readonly_table = False
     exclude = []
+    colored_fields = {}
 
     def default_form_validation(self,request):
         #用户可以在此进行自定义的表单验证，相当于django form 的clean方法
