@@ -19,6 +19,7 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('king_admin/', include('king_admin.urls')),
     path('DBadd/', include('DBadd.urls')),
     path('gbacc/', include('gbacc.urls')),
