@@ -12,6 +12,13 @@ class UserProfileAdmin(BaseAdmin):#定制Djanago admin
 
 site.register(models.UserProfile, UserProfileAdmin)
 
+# 02班级表
+class ClassListAdmin(BaseAdmin):
+    list_display = ['id', 'branch', 'course', 'class_type', 'semester', 'start_date', 'end_date']  # 显示字段表头
+    list_filter = ['branch', 'course', 'class_type']  # 过滤器(可以包含ManyToManyField) （注意加 逗号 , ）
+    filter_horizontal = ['teachers']  #复选框
+site.register(models.ClassList,ClassListAdmin)               #02班级表
+
 #04客户信息表
 class CustomerAdmin(BaseAdmin):#定制Djanago admin
     list_display = ('id', 'qq', 'source', 'consultant', 'content', 'date','status','enroll')  # 显示字段表头

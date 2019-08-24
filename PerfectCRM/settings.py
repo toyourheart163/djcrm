@@ -142,3 +142,4 @@ EMAIL_HOST = 'smtp.sina.cn'   #发送邮件的邮箱 的 SMTP服务器       #�
 EMAIL_PORT = 465                 #发件箱的SMTP服务器端口 #一般不需要修改465
 EMAIL_HOST_USER = 'perfectcrm@sina.cn'    #发送邮件的邮箱账号     #根据情况重新配置  #perfectcrm@sina.cn   pydjango@sina.cn
 EMAIL_HOST_PASSWORD = 'admin123456'         #发送邮件的邮箱密码    #根据情况重新配置
+HOMEWORK_DATA='%s/crm/static/homeworks'%BASE_DIR

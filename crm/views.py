@@ -9,6 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError  #主动捕捉错误信息
 from django.core.cache import cache
 from django.core.mail import send_mail
+from django.http import StreamingHttpResponse #页面返回
+
 # send_mail的参数分别是  邮件标题，邮件内容，发件箱(settings.py中设置过的那个)，收件箱列表(可以发送给多个人),失败静默(若发送失败，报错提示我们)
 
 from crm import models, forms
@@ -273,3 +275,155 @@ def payment(request,enroll_id):
     else:
         payment_form= forms.PaymentForm()#生成表单
     return render(request, 'crm/payment.html', locals())
+
+@login_required
+def student_course(request):
+    if request.user.stu_account:
+        enrollmentlist=request.user.stu_account.enrollment_set.all()#根据账号表关联的ID获取06学员报名信息表
+    return  render(request, 'crm/student_course.html', locals())
+
+#学生上课记录列表
+@login_required # 登陆后页面才能访问
+def studyrecords(request,enroll_obj_id):
+    enroll_obj=models.Enrollment.objects.get(id=enroll_obj_id)#根据ID获取06学员报名信息表
+    studyrecordlist=enroll_obj.studyrecord_set.all()#根据06学员报名信息表的ID获取09学习纪录
+    return render(request,'crm/studyrecords.html',locals())
+
+@login_required#登陆才能访问
+def homework_detail(request,enroll_obj_id,studyrecord_id):
+    studyrecord_obj=models.StudyRecord.objects.get(id=studyrecord_id)#取学习记录 对象
+    enroll_obj=models.Enrollment.objects.get(id=enroll_obj_id)#取班级对象
+
+    #               作业根目录    班级ID      上课记录ID               学习记录ID
+    homework_path="{base_dir}/{class_id}/{course_record_id}/{studyercord_id}/".format(
+        base_dir=settings.HOMEWORK_DATA, #静态配置文件
+        class_id=studyrecord_obj.student.enrolled_class_id,#09学习纪录#学生名字#所报班级ID号
+        course_record_id=studyrecord_obj.course_record_id,#09学习纪录#每节课上课纪录表
+        studyercord_id=studyrecord_obj.id##09学习纪录
+    )
+    print('homework_path路径：',studyrecord_obj.student.enrolled_class_id,studyrecord_obj.course_record_id,studyrecord_obj.id)
+
+    if os.path.exists(homework_path):#判断目录是否存在
+        file_lists = []  # 已经上传的文件列表
+        for file_name in os.listdir( homework_path ):
+            f_path = '%s/%s' % (homework_path, file_name)  # 文件名字
+            modify_time = time.strftime( "%Y-%m-%d %H:%M:%S", time.gmtime( os.stat( f_path ).st_mtime ) )  # 文件上传时间
+            file_lists.append( [file_name, os.stat( f_path ).st_size, modify_time] )  # 添加到文件列表#文件名字#文件大小文件上传时间
+
+
+    if request.method=="POST":#上传
+        ret=False
+        data=request.POST.get('data') #ajax
+        if data:#如果有删除动作
+            del_f_path="%s/%s"%(homework_path,data)#文件路径
+            print('删除文件,路径:',del_f_path)
+            os.remove(del_f_path) #删除
+            ret=True
+            return HttpResponse(json.dumps(ret))#ret=False
+        if request.is_ajax():  # ajax上传图片 #异步提交
+            print("POST",request.POST)
+            if not os.path.isdir( homework_path ):  # 没有目录 #isdir返回true,如果路径名是指现有的目录。
+                os.makedirs( homework_path, exist_ok=True )  # 创建目录　　
+            for k,v in request.FILES.items():#上传的文件
+                with open('%s/%s'%(homework_path,v.name),'wb') as f:#chunk 写入文件
+                    for chunk in v.chunks(): #循环写文件
+                        f.write(chunk)
+            return HttpResponse( json.dumps( {"status": 0, 'mag': "上传完成！", 'file_lists': file_lists} ) )  # 上传文件返回
+
+    if request.method=="POST":#上传
+        link = request.POST.get( 'link' )  # 让页面POST提交的值，在页面GET后仍然存在显示
+        if link:
+            homework_link=models.StudyRecord.objects.filter( id=studyrecord_id ).update(homework_link=link)
+            return redirect('/crm/homework_detail/%s/%s/' %(enroll_obj_id,studyrecord_id) )#跳转到enrollment_rejection
+    return render(request,'crm/homework_detail.html',locals())
+
+
+#讲师班级
+@login_required
+def teacher_class(request):
+    # user_id=request.user.id #当前登陆的ID
+    # classlist=models.UserProfile.objects.get(id=user_id).classlist_set.all()#讲师所教班级
+    classes_obj=request.user.classlist_set.all() #根据 登陆的ID 获取02班级表
+    return render(request,'crm/teacher_class.html',locals())
+
+# 讲师班级课节详情
+@login_required
+def teacher_class_detail(request,class_id):
+    # classes_obj=models.UserProfile.objects.get(id=user_id).classlist_set.get(id=class_id)#所选的班级
+    classes_obj=request.user.classlist_set.get(id=class_id) #根据 登陆的ID 获取02班级表
+    courserecordlist=classes_obj.courserecord_set.all()#根据 02班级表的ID 获取09学习纪录
+    return render(request, 'crm/teacher_classes_detail.html', locals())
+
+# 讲师班级
+@login_required  # 登陆后页面才能访问
+def teacher_class(request):
+    # user_id=request.user.id #当前登陆的ID
+    # classlist=models.UserProfile.objects.get(id=user_id).classlist_set.all()#讲师所教班级
+    classes_obj = request.user.classlist_set.all()  # 根据 登陆的ID 获取02班级表
+    return render( request, 'bpm_teacher/teacher_class.html', locals() )
+
+# 讲师班级课节详情
+@login_required  # 登陆后页面才能访问
+def teacher_class_detail(request, class_id):
+    # user_id=request.user.id #当前登陆的ID
+    # classes_obj=models.UserProfile.objects.get(id=user_id).classlist_set.get(id=class_id)#所选的班级
+    classes_obj = request.user.classlist_set.get( id=class_id )  # 根据 登陆的ID 获取02班级表
+    courserecordlist = classes_obj.courserecord_set.all()  # 根据 02班级表的ID 获取09学习纪录
+    return render( request, 'bpm_teacher/teacher_classes_detail.html', locals() )
+# ————————62PerfectCRM实现CRM讲师讲课记录————————
+
+# ————————63PerfectCRM实现CRM讲师下载作业————————
+# 本节课的学员
+@login_required  # 登陆后页面才能访问
+def teacher_lesson_detail(request, class_id, courserecord_id):
+    # classes_obj=models.UserProfile.objects.get(id=request.user.id).classlist_set.get(id=class_id)#所选的班级
+    classes_obj = request.user.classlist_set.get( id=class_id ) # 根据 登陆的ID 获取02班级表
+    courserecordlist = classes_obj.courserecord_set.get( id=courserecord_id )  # 根据 前端的ID 获取08每节课上课纪录表
+
+    # studyrecord_list=models.CourseRecord.objects.get(id=courserecord_id).studyrecord_set.all()#取本节课所有学员
+    studyrecord_list = courserecordlist.studyrecord_set.all()  # 根据08每节课上课纪录表 #获取09学习纪录 #取本节课所有学员
+
+    for i in studyrecord_list:  # 循环本节课所有学员 交作业的状态
+        studyrecord_id = i.id  # 获取本节课所有学员的ID
+        if studyrecord_id:  # 有获取到ID
+            HOMEWORK_path = '%s/%s/%s/%s/' % (settings.HOMEWORK_DATA, class_id, courserecord_id, studyrecord_id)  # 作业目录
+            if os.path.exists( HOMEWORK_path ):  # 判断目录是否存在
+                try:#防止后台误删文件
+                    file_list = os.listdir( HOMEWORK_path )  # 取目录 下的文件
+                    isfile = os.path.isfile( '%s%s' % (HOMEWORK_path, file_list[0]) )  # 判断是不是文件
+                    studyrecord_list.filter( id=studyrecord_id ).update( delivery=isfile )  # 更新交付作业状态
+                except:
+                    studyrecord_list.filter( id=studyrecord_id ).update( delivery=False )  # file_list 出错# 更新交付作业状态
+            else:
+                studyrecord_list.filter( id=studyrecord_id ).update( delivery=False )# 更新交付作业状态
+    return render( request, 'bpm_teacher/teacher_lesson_detail.html', locals() )
+
+# 学员作业下载
+@login_required  # 登陆后页面才能访问
+def howk_down(request, class_id, courserecord_id, studyrecord_id):
+    HOMEWORK_path = '%s/%s/%s/%s/' % (settings.HOMEWORK_DATA, class_id, courserecord_id, studyrecord_id)  # 作业目录
+    print( '下载作业目录:', HOMEWORK_path )
+
+    def file_iterator(file_path, chunk_size=512):  # 获取文件 #chunk_size每次读取的大小 #文件迭代器
+        with open( file_path, 'rb', ) as f:  # 循环打开 文件#以二进制读模式打开
+            while True:  # 如果有文件
+                byte = f.read( chunk_size )  # read读最多大小字节,作为字节返回。#获取文件大小
+                if byte:
+                    yield byte  # 返回 yield 后的值作为第一次迭代的返回值. 循环下一次，再返回，直到没有可以返回的。
+                else:
+                    break  # 没有字节就中止
+
+    if os.path.exists( HOMEWORK_path ):  # 判断目录是否存在
+        try:#防止后台误删文件
+            file_list = os.listdir( HOMEWORK_path )  # 取目录 下的文件
+            print( '文件名：', file_list, type( file_list ) )
+            file_path = '%s%s' % (HOMEWORK_path, file_list[0])  # 下载文件路径
+            print( '下载文件路径：', file_path )
+            response = StreamingHttpResponse( file_iterator( file_path ) )  # StreamingHttpResponse是将文件内容进行流式传输
+            response['Content-Type'] = 'application/octet-stream'  # 文件类型 #应用程序/octet-stream.*（ 二进制流，不知道下载文件类型）
+            file_name = 'attachment;filename=%s' % file_list[0]  # 文件名字# 支持中文
+            response['Content-Disposition'] = file_name.encode()  # 支持中文#编码默认encoding='utf-8'
+            return response  # 返回下载 请求的内容
+        except:
+            models.StudyRecord.objects.get( id=studyrecord_id ).update( delivery=False )  # 更新交付作业状态 # file_list 出错
+    return redirect( '/bpm/teacher_lesson_detail/%s/%s/' % (class_id, courserecord_id) )  # 返回##本节课的学员

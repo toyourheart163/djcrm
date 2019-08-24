@@ -192,31 +192,17 @@ class Payment(models.Model):
 
 """08每节课上课纪录表"""
 class CourseRecord(models.Model):
-    # ForeignKey就是表与表之间的某种约定的关系#verbose_name是Admin中显示的字段名称 #CASCADE从父表删除或更新且自动删除或更新子表中匹配的行。
     from_class = models.ForeignKey("ClassList",verbose_name="班级",on_delete=models.CASCADE) #那个班级
 
-    #PositiveSmallIntegerField正小整数 0 ～ 32767 #verbose_name是Admin中显示的字段名称
     day_num = models.PositiveSmallIntegerField(verbose_name="第几节(天)") #第几节课
-
-    # ForeignKey就是表与表之间的某种约定的关系 #CASCADE从父表删除或更新且自动删除或更新子表中匹配的行。
     teacher = models.ForeignKey("UserProfile",on_delete=models.CASCADE)#老师是谁    关联到    账号表
-
-    #BooleanField布尔值类型#default=True默认(True)不允许出现空字符
     has_homework = models.BooleanField(default=True) #有没有作业
-
-    # CharField定长文本#名字最长128#Django可空#数据库可以为空
     homework_title = models.CharField(max_length=128,blank=True,null=True) #作业标题
-
-    #TextField无限制长度的文本#Django可空#数据库可以为空
     homework_content = models.TextField(blank=True,null=True) #作业内容
-
-    #TextField无限制长度的文本#verbose_name是Admin中显示的字段名称
     outline =models.TextField(verbose_name="本节课程大纲") #课程主要讲什么
-
-    # DateTimeField日期+时间格式 YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ] #auto_now_add创建时间（只读）
     date = models.DateField(auto_now_add=True)#创建时间（数据库自增）
 
-    def __str__(self):#__str__()是Python的一个“魔幻”方法，这个方法定义了当object调用str()时应该返回的值。
+    def __str__(self):
         return " %s:%s" %(self.from_class,self.day_num)#返回#格式化字符串#班级#第几节(天)
     class Meta:#通过一个内嵌类 "class Meta" 给你的 model 定义元数据
         unique_together = ("from_class","day_num") #联合索引
@@ -224,7 +210,6 @@ class CourseRecord(models.Model):
 
 """09学习纪录"""
 class StudyRecord(models.Model):
-    # ForeignKey就是表与表之间的某种约定的关系 #CASCADE从父表删除或更新且自动删除或更新子表中匹配的行。
     student = models.ForeignKey("Enrollment",on_delete=models.CASCADE)#学生名字   关联到    学员报名信息表
     course_record = models.ForeignKey("CourseRecord",on_delete=models.CASCADE)#开课记录   # 关联到    每节课上课纪录表
 
@@ -235,6 +220,8 @@ class StudyRecord(models.Model):
                             (3,"早退"),)
     #PositiveSmallIntegerField正小整数 0 ～ 32767（省空间）#choices是Admin中显示选择框的内容，用不变动的数据放在内存中从而避免跨表操作
     attendance = models.SmallIntegerField(choices=attendance_choices) # 本节课上课状态记录
+    delivery = models.BooleanField(default=False,verbose_name="交作业") #有没有交付作业
+    homework_link = models.TextField(blank=True, null=True)
 
     score_choices = (#学习成绩
                      (100,"A+"),
@@ -326,6 +313,8 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False,verbose_name='超级账号') #超级账号
     USERNAME_FIELD ='email'#指定做为  #登陆账号
     REQUIRED_FIELDS = ['name']#必填字段
+
+    stu_account=models.ForeignKey("Customer",verbose_name='关联学员帐号',blank=True,null=True,on_delete=models.CASCADE,help_text='报名成功后创建关联帐户')
 
     objects = UserProfileManager()#创建账号 #关联这个函数
 

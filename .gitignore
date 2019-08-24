@@ -6,6 +6,7 @@ __pycache__/
 .git
 enrolled_data
 Pipfile
+migrations/
 
 # C extensions
 *.so

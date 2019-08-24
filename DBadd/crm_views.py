@@ -222,3 +222,41 @@ def crm_ContractTemplate(request):
             return HttpResponse('数据错误！重复了吧。。。')
 
         return  redirect('/DBadd/crm_ContractTemplate/')
+
+def DBadd(request):
+    return  render(request,'DBadd/DBadd.html',locals())
+
+def crm_CourseRecord(request):
+    if request.method == "GET":
+        user_list = models.CourseRecord.objects.all()
+        return render(request, 'DBadd/crm_CourseRecord.html', {'user_list': user_list})
+    elif request.method == "POST":
+        a=1
+        for i in range(2):
+            try:
+                # 创建班级  节课
+                models.CourseRecord.objects.create(from_class_id=1, day_num=a, teacher_id=1, has_homework=1, outline=1,date='2018-05-05')
+                models.CourseRecord.objects.create(from_class_id=2, day_num=a, teacher_id=1, has_homework=1, outline=1,date='2018-05-05')
+                models.CourseRecord.objects.create(from_class_id=3, day_num=a, teacher_id=1, has_homework=1, outline=1,date='2018-05-05')
+                a+=1
+            except:
+                return HttpResponse('数据错误！重复了吧。。。')
+        return redirect('/DBadd/crm_CourseRecord/')
+
+def crm_Enrollment(request):
+    if request.method == "GET":
+        user_list = models.Enrollment.objects.all()
+        return render(request, 'DBadd/crm_Enrollment.html', {'user_list': user_list})
+    elif request.method == "POST":
+        a=1
+        for i in range(6):
+            try:
+                # 创建报名信息
+                models.Enrollment.objects.create(customer_id=a, enrolled_class_id=1, consultant_id=1, contract_review=1,contract_agreed=1,contract_approved=1,Pay_cost=1,date='2018-05-05 14:45:19.537109')
+                models.Enrollment.objects.create(customer_id=a, enrolled_class_id=2, consultant_id=1, contract_review=1,contract_agreed=1,contract_approved=1,Pay_cost=1,date='2018-05-05 14:45:19.537109')
+                models.Enrollment.objects.create(customer_id=a, enrolled_class_id=3, consultant_id=1, contract_review=1,contract_agreed=1,contract_approved=1,Pay_cost=1,date='2018-05-05 14:45:19.537109')
+                a+=1
+                # 创建报名信息
+            except:
+                return HttpResponse('数据错误！重复了吧。。。')
+        return redirect('/DBadd/crm_Enrollment/')
