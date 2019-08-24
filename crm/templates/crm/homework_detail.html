@@ -1,0 +1,140 @@
+{#homework_detail.html#}
+{## ————————61PerfectCRM实现CRM学生上传作业————————#}
+{% extends 'crm/bpm_sample.html' %}
+{% block right-container-content %} {#自定义内容开始 右边页面内容#}
+    <div class="panel-default">
+        <div class="panel-body">
+            <h4>当前用户： {{ request.user }} | 学员名字:{{ request.user.stu_account.name }} |
+                学员QQ:{{ request.user.stu_account }}</h4>
+            <div class="row" style="margin-bottom: 20px">
+                <ol class="breadcrumb">
+                    <li><a href="/crm/my_course/">我的课程</a></li>
+                    <li><a href="/crm/studyrecords/{{ enroll_obj.id }}/">{{ enroll_obj.enrolled_class }}</a></li>
+                    <li><a href="#">第:{{ studyrecord_obj.course_record.day_num }}节</a></li>
+                </ol>
+            </div>
+            <h4>作业标题:{{ studyrecord_obj.course_record.homework_title }}</h4>
+            <h4>作业详情:
+                <pre>{{ studyrecord_obj.course_record.homework_content }}</pre>
+            </h4>
+            <h4>老师评语:
+                <pre>{{ studyrecord_obj.memo }}</pre>
+            </h4>
+            <h4>本节成绩: {{ studyrecord_obj.score }} </h4>
+            <h4>本节作业链接:
+                <pre>{{ studyrecord_obj.homework_link }}</pre>
+            </h4>
+            <form method="post" class="form-horizontal" role="form">{% csrf_token %}
+                <input type="text" class="form-control" name="link" placeholder="作业链接">
+                <input type="submit" class="btn btn-info" value="提交">
+            </form>
+
+
+            <hr>
+            <h4>已经上传的文件: <a id="refresh">刷新</a></h4>
+            <div class="row">
+                <div class="col-xs-9 col-md-6">
+                    {% for file in file_lists %}
+                        <div class="right">
+                            {% for foo in file %}
+                                <a>{{ foo }}</a>  |
+                            {% endfor %}
+                            <span class="img_f hide">{{ file.0 }}</span>
+                            <a class="del_img">删除</a>
+                        </div>
+                        <br>
+                    {% endfor %}
+                </div>
+            </div>
+            <h4>请上传作业</h4>
+            <form action="{{ request.path }}" method="post" id="dropz" enctype="multipart/form-data"
+                  class="form-group dropzone">{% csrf_token %}
+                <input type="hidden" name="file_id" ng-model="file_id" id="file_id"/>
+            </form>
+            <h4>课程大纲:
+                <pre>{{ studyrecord_obj.course_record.outline }}</pre>
+            </h4>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block js %}
+    <script>
+        //页面加载时绑定按钮点击事件
+        $("#refresh").click(function () {
+            window.location.reload();//刷新当前页面.
+        });
+
+        $('.del_img').click(function () {
+            s = $(this);
+            texts = s.parent().children("span").text();
+            $.ajax({
+                url: "{{ requset.path }}",
+                type: "post",
+                data: {"data": texts},
+                headers: {'X-CSRFtoken': $.cookie('csrftoken')},
+                success: function (arg) {
+                    if (arg) {
+                        alert('删除成功!');
+                        s.parent('div').addClass('hide');
+                    }
+                }
+            })
+        });
+
+
+        Dropzone.autoDiscover = false;
+        appElement = document.querySelector('div .inmodal');
+        myDropzone = new Dropzone("#dropz", {
+            url: "{{ request.path }}",//文件提交地址
+            paramName: "file", //默认为file
+            method: "post",  //也可用put
+            addRemoveLinks: true,
+            maxFiles: 1,//一次性上传的文件数量上限
+            maxFilesize: 2, //文件大小，单位：MB
+            acceptedFiles: ".zip,.7z", //上传的类型
+            parallelUploads: 1,//一次上传的文件数量
+            dictDefaultMessage: '请将作业压缩打包后上传',
+            dictMaxFilesExceeded: "您最多只能上传1个文件！",
+            dictResponseError: '文件上传失败!',
+            dictInvalidFileType: "文件类型只能是*.zip,*.7z。",
+            dictFallbackMessage: "浏览器不受支持",
+            dictFileTooBig: "文件过大上传文件最大支持.",
+            dictRemoveLinks: "删除",
+            dictCancelUpload: "取消",
+
+
+            init: function () {
+                this.on("addedfile", function (file) {
+                    //上传文件时触发的事件
+                    document.querySelector('div .dz-default').style.display = 'none';
+                });
+                this.on("success", function (file, data) {
+                    //上传成功触发的事件
+                    console.log('ok');
+                });
+                this.on("error", function (file, data) {
+                    //上传失败触发的事件
+                    console.log('fail');
+                    var message = '';
+                    //lavarel框架有一个表单验证，
+                    //对于ajax请求，JSON 响应会发送一个 422 HTTP 状态码，
+                    //对应file.accepted的值是false，在这里捕捉表单验证的错误提示
+                    if (file.accepted) {
+                        $.each(data, function (key, val) {
+                            message = message + val[0] + ';';
+                        });
+                        //控制器层面的错误提示，file.accepted = true的时候；
+                        alert(message);
+                    }
+                });
+                this.on("removedfile", function (file) {
+                    //删除文件时触发的方法
+                    document.querySelector('div .dz-default').style.display = 'block';
+                });
+            }
+        });
+    </script>
+{% endblock %}
+{## ————————61PerfectCRM实现CRM学生上传作业————————#}

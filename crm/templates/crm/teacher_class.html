@@ -1,0 +1,43 @@
+{#teacher_class.html#}
+{## ————————62PerfectCRM实现CRM讲师讲课记录————————#}
+{% extends 'crm/bpm_sample.html' %}
+{% block right-container-content %} {#自定义内容开始 右边页面内容#}
+    <div class="panel-default">
+        <div class="panel-body">
+            <h4>当前用户： {{ request.user }} | 讲师名字:{{ request.user.stu_account.name }} |
+                讲师QQ:{{ request.user.stu_account }}</h4>
+            <ol class="breadcrumb">
+                <li><a href="/crm/teacher_class/">我的班级</a></li>
+            </ol>
+            <table class="table table-striped table-responsive">
+                <thead>
+                <tr>
+                    <th><a target="_blank" href="/king_admin/crm/classlist/add/">校区班级</a></th>
+                    <th>班级类型</th>
+                    <th><a target="_blank" href="/king_admin/crm/courserecord/add/">课程进度</a></th>
+                    <th><a target="_blank" href="/king_admin/crm/customer/">学员数量</a></th>
+                    <th>开课日期</th>
+                    <th>结业日期</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for class in classes_obj %}
+                    <tr>
+                        <td>{{ class }}</td>
+                        <td>{{ class.get_class_type_display }}</td>
+                        <td>
+                            <a href="{% url 'teacher_class_detail' class.id %}">
+                                已上: {{ class.courserecord_set.all.count }}节
+                            </a>
+                        </td>
+                        <td>{{ class.enrollment_set.select_related.count }}</td>
+                        <td>{{ class.start_date }}</td>
+                        <td>{{ class.end_date }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{## ————————62PerfectCRM实现CRM讲师讲课记录————————#}

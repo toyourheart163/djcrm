@@ -1,0 +1,98 @@
+{#teacher_lesson_detail.html#}
+{## ————————63PerfectCRM实现CRM讲师下载作业————————#}
+{% extends 'crm/bpm_sample.html' %}
+{% block right-container-content %} {#自定义内容开始 右边页面内容#}
+    <div class="panel-default">
+        <div class="panel-default">
+            <div class="panel-body">
+                <h4>当前用户： {{ request.user }} | 讲师名字:{{ request.user.stu_account.name }} |
+                    讲师QQ:{{ request.user.stu_account }} </h4>
+                <ol class="breadcrumb">
+                    <li><a href="/crm/teacher_class/">我的班级</a></li>
+                    <li><a href="{% url 'teacher_class_detail' classes_obj.id %}">{{ classes_obj }}</a></li>
+                    <li>
+                        <a href="{% url 'teacher_lesson_detail' classes_obj.id  courserecordlist.id %}">第{{ courserecordlist.day_num }}节</a>
+                    </li>
+                </ol>
+                <li>
+                    <a target="_blank"
+                       href="/king_admin/crm/courserecord/{{ courserecordlist.id }}/change/">作业标题:</a>
+                    <pre>{{ courserecordlist.homework_title }}</pre>
+                </li>
+                <li>
+                    <a target="_blank"
+                       href="/king_admin/crm/courserecord/{{ courserecordlist.id }}/change/">作业要求:</a>
+                    <pre>{{ courserecordlist.homework_content }}</pre>
+                </li>
+
+
+                <table class="table table-striped table-responsive">
+                    <thead>
+                    <tr>
+                        <th>学员ID</th>
+                        <th>学员姓名</th>
+                        <th>
+                            <a target="_blank" href="/king_admin/crm/studyrecord/?course_record={{ courserecord_id }} ">签到状态</a>
+                        </th>
+                        <th> 作业链接</th>
+                        <th>
+                            {% if courserecordlist.has_homework %}
+                                <a href="{% url 'teacher_lesson_detail' classes_obj.id  courserecordlist.id %}">学员作业(多刷) </a>
+                            {% else %}
+                                <a style="color: #ff1900" target="_blank"
+                                   href="/king_admin/crm/courserecord/{{ courserecordlist.id }}/change/">创建新作业</a>
+                            {% endif %}
+                        </th>
+                        <th>
+                            {% if courserecordlist.has_homework %}
+                                <a href="{% url 'teacher_lesson_detail' classes_obj.id  courserecordlist.id %}">批改作业 </a>
+                            {% else %}
+                                没有作业
+                            {% endif %}
+                        </th>
+                    </tr>
+                    </thead>
+
+
+                    <tbody>
+                    {% for studyrecrd in studyrecord_list %}
+                        <tr>
+                            <td>{{ studyrecrd.student.id }}</td>
+                            {#学员ID#}
+                            <td>{{ studyrecrd.student.customer.name }}</td>
+                            {#学员姓名#}
+                            <td>{{ studyrecrd.get_attendance_display }}</td>
+                            {#签到状态#}
+                            <td>
+                                <pre style="width: 240px;height: 60px">{{ studyrecrd.homework_link }}</pre>
+                            </td>
+                            {#作业链接#}
+                            <td>
+                                {% if studyrecrd.delivery %}
+                                    <a href="{% url 'howk_down'  classes_obj.id studyrecrd.course_record_id studyrecrd.id %}">下载作业</a>
+                                {% endif %}{#学员作业#}
+                            </td>
+                            <td>
+                                {% if studyrecrd.course_record.has_homework %}
+                                    {% if studyrecrd.score == 0 %}
+                                        <a target="_blank"
+                                           href="/king_admin/crm/studyrecord/{{ studyrecrd.id }}/change/"
+                                           style="color: #ff1600">未批改</a>
+                                    {% else %}
+                                        <a target="_blank"
+                                           href="/king_admin/crm/studyrecord/{{ studyrecrd.id }}/change/"
+                                           style="color: #0014ff">{{ studyrecrd.get_score_display }}</a>
+                                    {% endif %}
+                                {% endif %}{#批改作业#}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{## ————————63PerfectCRM实现CRM讲师下载作业————————#}
+
+{#teacher_lesson_detail.html#}

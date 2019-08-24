@@ -1,0 +1,28 @@
+{#crm_Enrollment.html#}
+{## ————————60PerfectCRM实现CRM学生上课记录————————#}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+    </head>
+    <body>
+        <h3>添加报名信息</h3>
+        <form method="POST" action="/DBadd/crm_Enrollment/">
+            {% csrf_token %}
+            <input type="submit"value="添加"/>
+        </form>
+        <h3>详细</h3>
+        <ul>
+            {% for row in user_list %}
+            <li>
+                <a>{{row.id}}-{{row.customer}}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>
+
+{## ————————60PerfectCRM实现CRM学生上课记录————————#}
+
+{#crm_Enrollment.html#}
