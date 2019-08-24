@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-.git
+.git/
 enrolled_data
 Pipfile
 migrations/
