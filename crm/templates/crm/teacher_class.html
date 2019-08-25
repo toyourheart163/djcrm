@@ -23,7 +23,13 @@
                 <tbody>
                 {% for class in classes_obj %}
                     <tr>
-                        <td>{{ class }}</td>
+                        <td>
+                            {## ————————64PerfectCRM实现CRM课程排名详情————————#}
+                            <a href="{% url 'coursetop_details' class.id %}">
+                                {## ————————64PerfectCRM实现CRM课程排名详情————————#}
+                                {{ class }}
+                            </a>
+                        </td>
                         <td>{{ class.get_class_type_display }}</td>
                         <td>
                             <a href="{% url 'teacher_class_detail' class.id %}">
@@ -37,7 +43,10 @@
                 {% endfor %}
                 </tbody>
             </table>
+            {% include 'crm/page_str.html' %}
         </div>
     </div>
 {% endblock %}
 {## ————————62PerfectCRM实现CRM讲师讲课记录————————#}
+
+{#teacher_class.html#}

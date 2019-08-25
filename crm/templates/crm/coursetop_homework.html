@@ -1,0 +1,86 @@
+{#coursetop_homework.html#}
+{## ————————66PerfectCRM实现CRM课程作业排名————————#}
+{% extends 'crm/bpm_sample.html' %}
+{% load coursetop_tags %}
+{% block right-container-content %} {#自定义内容开始 右边页面内容#}
+    <div class="panel-default">
+        <div class="panel-default">
+            <div class="panel-body">
+                <h4>当前用户： {{ request.user }} | 讲师名字:{{ request.user.stu_account.name }} |
+                    讲师QQ:{{ request.user.stu_account }} </h4>
+                <ol class="breadcrumb">
+                    <li><a href="{% url 'teacher_class' %}">我的班级</a></li>
+                    <li><a href="{% url 'teacher_class_detail' classes_obj.id %}">{{ classes_obj }}</a></li>
+                    <li><a href="{% url 'coursetop_homework' classes_obj.id %}">作业排名</a></li>
+                </ol>
+                <table class="table table-striped table-responsive">
+                    <thead>
+                    <tr>
+                        <th><a href="{% url 'coursetop_details' classes_obj.id %}">学员ID</a></th>
+                        <th><a target="_blank" href="/king_admin/crm/enrollment/?enrolled_class={{ class_id }}">学员姓名</a>
+                        </th>
+                        <th>学员QQ</th>
+                        <th>报名日期</th>
+                        <th><a href="{% url 'coursetop_score' classes_obj.id %}">课程成绩</a></th>
+                        <th><a href="{% url 'coursetop_score' classes_obj.id %}">班级排名</a></th>
+                        <th>已交作业</th>
+                        <th>
+                            {## ————————67PerfectCRM实现CRM课程出勤排名————————#}
+                            <a href="{% url 'coursetop_attendance' classes_obj.id %}">
+                                {## ————————67PerfectCRM实现CRM课程出勤排名————————#}
+                                出勤次数
+                            </a>
+                        </th>
+                        <th>迟到次数</th>
+                        <th>缺勤次数</th>
+                        <th>早退次数</th>
+                    </tr>
+                    </thead>
+
+
+                    <tbody>
+                    {% for enroll_objs  in  lists %}
+                        {% for top,enroll_obj in enroll_objs.items %}{#分离提取K，V#[{排名: (学员ID, 分数)}]#}
+                            {% id_enrollment enroll_obj.0 as enrollment %}{#enroll_obj.0 #学员ID#}{#通过学员ID查06学员报名信息表#}
+                            <tr>
+                                <td>{{ enroll_obj.0 }}</td>
+                                {#学员id#}
+                                <td>{{ enrollment.customer.name }}</td>
+                                {#学员姓名#}
+                                <td>{{ enrollment.customer.qq }}</td>
+                                {#学员QQ#}
+                                <td>{{ enrollment.date }}</td>
+                                {#报名日期#}
+                                <td>
+                                    {% fetch_stu_course_score class_grade_dic enroll_obj.0 %} {# 获取 学员 课程 分数#}
+                                </td>
+                                <td>
+                                    {% get_stu_grade_ranking ranking_dic enroll_obj.0 %} {# 得到 学员 年级 排名#}
+                                </td>
+                                <td style="color: #ff0f00">
+                                    {% get_already_homework enroll_obj.0 %}{#已交作业#}
+                                </td>
+                                <td>
+                                    {% get_stu_attendance enroll_obj.0 %}{#出勤次数#}
+                                </td>
+                                <td>
+                                    {% get_stu_late enroll_obj.0 %}{#迟到次数#}
+                                </td>
+                                <td>
+                                    {% get_stu_absenteeism enroll_obj.0 %}{#缺勤次数#}
+                                </td>
+                                <td>
+                                    {% get_stu_early enroll_obj.0 %}{#早退次数#}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{## ————————66PerfectCRM实现CRM课程作业排名————————#}
+
+{#coursetop_homework.html#}

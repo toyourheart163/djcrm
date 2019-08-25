@@ -8,8 +8,8 @@
         <h4>当前用户： {{ request.user }} | 学员名字:{{ request.user.stu_account.name }} |
             学员QQ:{{ request.user.stu_account }}</h4>
         <ol class="breadcrumb">
-            <li><a href="/bpm/student_course/">我的课程</a></li>
-            <li><a href="/bpm/studyrecords/{{ enroll_obj.id }}/">{{ enroll_obj.enrolled_class }}</a></li>
+            <li><a href="/crm/student_course/">我的课程</a></li>
+            <li><a href="/crm/studyrecords/{{ enroll_obj.id }}/">{{ enroll_obj.enrolled_class }}</a></li>
         </ol>
 
         <table class="table table-striped table-responsive ">
@@ -63,6 +63,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% include 'crm/page_str.html' %}
     </div>
 </div>
 {% endblock %}

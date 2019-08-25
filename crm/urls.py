@@ -15,10 +15,15 @@ urlpatterns = [
 
     re_path(r'^student_course/$', views.student_course, name='student_course'),   #学生报名的课程
     re_path(r'^studyrecords/(\d+)/$', views.studyrecords, name='studyrecords'),  # #学生上课记录列表StudyRecord
-    re_path( r'^homework_detail/(\d+)/(\d+)/$', views.homework_detail, name='homework_detail' ),
+    re_path(r'^homework_detail/(\d+)/(\d+)/$', views.homework_detail, name='homework_detail'),
     re_path(r'^teacher_class/$', views.teacher_class,name='teacher_class'),#讲师班级
     re_path(r'^teacher_class_detail/(\d+)/$', views.teacher_class_detail, name='teacher_class_detail'),  # 讲师班级课节详情
-    re_path( r'^teacher_lesson_detail/(\d+)/(\d+)/$', views.teacher_lesson_detail,name='teacher_lesson_detail' ),  # 本节课的学员
-    re_path( r'^homeworks/(\d+)/(\d+)/(\d+)/$', views.howk_down, name='howk_down' ),  # 作业下载
-
+    re_path(r'^teacher_lesson_detail/(\d+)/(\d+)/$', views.teacher_lesson_detail,name='teacher_lesson_detail'),  # 本节课的学员
+    re_path(r'^homeworks/(\d+)/(\d+)/(\d+)/$', views.howk_down, name='howk_down'),  # 作业下载
+    re_path(r'^coursetop_details/(\d+)/$', views.coursetop_details, name="coursetop_details"),    # 课程排名详情
+    re_path(r'^coursetop_details/(\d+)/$', views.coursetop_details, name="coursetop_details"),    # 课程排名详情
+    # ————————65PerfectCRM实现CRM课程分数排名————————
+    re_path(r'^coursetop_score/(\d+)/$', views.coursetop_score, name="coursetop_score"),    # 班级分数排行
+    re_path(r'^coursetop_homework/(\d+)/$', views.coursetop_homework, name="coursetop_homework"),  # 班级作业排行
+    re_path( r'^coursetop_attendance/(\d+)/$', views.coursetop_attendance, name="coursetop_attendance" ),  # 班级出勤排行
 ]

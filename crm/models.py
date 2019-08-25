@@ -40,8 +40,12 @@ class ClassList(models.Model):
     # DateField 日期格式 YYYY-MM-DD #verbose_name是Admin中显示的字段名称 #Django可空#数据库可以为空
     end_date = models.DateField(verbose_name="结业日期",blank=True,null=True)
 
-    def __str__(self):#__str__()是Python的一个“魔幻”方法，这个方法定义了当object调用str()时应该返回的值。
-        return "%s %s %s" %(self.branch,self.course,self.semester) #返回 #%s格式化输出字符串 #校区#课程# 学期
+    def __str__(self):
+        try:
+            return "%s %s %s" %(self.branch,self.course,self.semester) #返回 #%s格式化输出字符串 #校区#课程# 学期
+        except:
+            return "添加班级表"
+    
     class Meta:#通过一个内嵌类 "class Meta" 给你的 model 定义元数据
         unique_together=('branch','course','semester')  #联合索引
         verbose_name_plural = "02班级表" #verbose_name_plural给你的模型类起一个更可读的名字
@@ -203,7 +207,11 @@ class CourseRecord(models.Model):
     date = models.DateField(auto_now_add=True)#创建时间（数据库自增）
 
     def __str__(self):
-        return " %s:%s" %(self.from_class,self.day_num)#返回#格式化字符串#班级#第几节(天)
+        try:
+            return " %s:%s" %(self.from_class,self.day_num)#返回#格式化字符串#班级#第几节(天)
+        except:
+            return "添加上课纪录"
+        
     class Meta:#通过一个内嵌类 "class Meta" 给你的 model 定义元数据
         unique_together = ("from_class","day_num") #联合索引
         verbose_name_plural = "08每节课上课纪录表" #verbose_name_plural给你的模型类起一个更可读的名字
@@ -338,6 +346,8 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
         # 最简单的可能的答案:是的,总是
         return True #职员状态
 
+    class Meta: #通过一个内嵌类 "class Meta" 给你的 model 定义元数据
+        verbose_name_plural = "0用户"
     @property
     def is_staff(self):
         '''“用户的员工吗?”'''
@@ -347,8 +357,10 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 """11角色表"""
 class Role(models.Model):
     name = models.CharField(unique=True,max_length=32)#角色名#CharField定长文本#角色名不可以重复#最长度=32字节
+    
     def __str__(self):#__str__()是Python的一个“魔幻”方法，这个方法定义了当object调用str()时应该返回的值。
         return self.name#返回 #角色名
+    
     class Meta: #通过一个内嵌类 "class Meta" 给你的 model 定义元数据
         verbose_name_plural = "11角色表" #verbose_name_plural给你的模型类起一个更可读的名字
 

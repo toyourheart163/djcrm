@@ -1,16 +1,18 @@
-# 随机字符串
-import random
-from random import choice
+# crm_views.py
+
+# ————————03PerfectCRM创建基本数据————————
 
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.shortcuts import HttpResponse
-from django.contrib.auth import models as auth_models
-from faker import Faker
 
 from crm import models
+from django.contrib.auth import models as auth_models
 
-faker = Faker('zh-cn')
+# 随机字符串
+import random
+from random import choice
+
 
 # 添加"""基本数据"""
 def crm_Role(request):
@@ -44,15 +46,50 @@ def crm_Role(request):
             models.Course.objects.create(name='Java', price='9999', period='60',
                                          outline='完成本套餐的学习，学员可以全面掌握后续JavaEE开发所需的Java技术，为后续学习JavaEE开发打下坚实的基础。')
 
-            models.UserProfile.objects.create(name='ADMIN系统维护', user_id=1)
-            models.UserProfile.objects.create(name='李白销售老师', user_id=2)
-            models.UserProfile.objects.create(name='杜甫销售老师', user_id=3)
-            models.UserProfile.objects.create(name='唐伯虎销售老师', user_id=4)
-            models.UserProfile.objects.create(name='颜真卿老师', user_id=5)
-            models.UserProfile.objects.create(name='罗贯中老师', user_id=6)
-            models.UserProfile.objects.create(name='白居易老师', user_id=7)
-            models.UserProfile.objects.create(name='施耐庵老师', user_id=8)
-            models.UserProfile.objects.create(name='曹雪芹校长', user_id=9)
+            # ————————47PerfectCRM实现CRM客户报名流程————————
+
+            # models.UserProfile.objects.create(name='ADMIN系统维护', user_id=1)
+            # models.UserProfile.objects.create(name='李白销售老师', user_id=2)
+            # models.UserProfile.objects.create(name='杜甫销售老师', user_id=3)
+            # models.UserProfile.objects.create(name='唐伯虎销售老师', user_id=4)
+            # models.UserProfile.objects.create(name='颜真卿老师', user_id=5)
+            # models.UserProfile.objects.create(name='罗贯中老师', user_id=6)
+            # models.UserProfile.objects.create(name='白居易老师', user_id=7)
+            # models.UserProfile.objects.create(name='施耐庵老师', user_id=8)
+            # models.UserProfile.objects.create(name='曹雪芹校长', user_id=9)
+
+
+            models.UserProfile.objects.create(last_login='2018-04-18', email='admin@qq.com', name='admin', is_active=1,
+                                              is_superuser=1,
+                                              password='pbkdf2_sha256$100000$cCkwdwzBiea6$VNOFkD7HAKwsjKXsDZMOGO8ct3EpVMaX2JPU+h5PK9E=')
+            models.UserProfile.objects.create(last_login='2018-04-18', email='admin1@qq.com', name='admin1',
+                                              is_active=1, is_superuser=1,
+                                              password='pbkdf2_sha256$100000$cCkwdwzBiea6$VNOFkD7HAKwsjKXsDZMOGO8ct3EpVMaX2JPU+h5PK9E=')
+            models.UserProfile.objects.create(last_login='2018-04-18', email='admin2@qq.com', name='admin2',
+                                              is_active=1, is_superuser=1,
+                                              password='pbkdf2_sha256$100000$cCkwdwzBiea6$VNOFkD7HAKwsjKXsDZMOGO8ct3EpVMaX2JPU+h5PK9E=')
+            models.UserProfile.objects.create(last_login='2018-04-18', email='admin3@qq.com', name='admin3',
+                                              is_active=1, is_superuser=1,
+                                              password='pbkdf2_sha256$100000$cCkwdwzBiea6$VNOFkD7HAKwsjKXsDZMOGO8ct3EpVMaX2JPU+h5PK9E=')
+            models.UserProfile.objects.create(last_login='2018-04-18', email='admin4@qq.com', name='admin4',
+                                              is_active=1, is_superuser=1,
+                                              password='pbkdf2_sha256$100000$cCkwdwzBiea6$VNOFkD7HAKwsjKXsDZMOGO8ct3EpVMaX2JPU+h5PK9E=')
+            models.UserProfile.objects.create(last_login='2018-04-18', email='admin5@qq.com', name='admin5',
+                                              is_active=1, is_superuser=1,
+                                              password='pbkdf2_sha256$100000$cCkwdwzBiea6$VNOFkD7HAKwsjKXsDZMOGO8ct3EpVMaX2JPU+h5PK9E=')
+            models.UserProfile.objects.create(last_login='2018-04-18', email='admin6@qq.com', name='admin6',
+                                              is_active=1, is_superuser=1,
+                                              password='pbkdf2_sha256$100000$cCkwdwzBiea6$VNOFkD7HAKwsjKXsDZMOGO8ct3EpVMaX2JPU+h5PK9E=')
+            models.UserProfile.objects.create(last_login='2018-04-18', email='admin7@qq.com', name='admin7',
+                                              is_active=1, is_superuser=1,
+                                              password='pbkdf2_sha256$100000$cCkwdwzBiea6$VNOFkD7HAKwsjKXsDZMOGO8ct3EpVMaX2JPU+h5PK9E=')
+            models.UserProfile.objects.create(last_login='2018-04-18', email='admin8@qq.com', name='admin8',
+                                              is_active=1, is_superuser=1,
+                                              password='pbkdf2_sha256$100000$cCkwdwzBiea6$VNOFkD7HAKwsjKXsDZMOGO8ct3EpVMaX2JPU+h5PK9E=')
+            models.UserProfile.objects.create(last_login='2018-04-18', email='admin9@qq.com', name='admin9',
+                                              is_active=1, is_superuser=1,
+                                              password='pbkdf2_sha256$100000$cCkwdwzBiea6$VNOFkD7HAKwsjKXsDZMOGO8ct3EpVMaX2JPU+h5PK9E=')
+            # ————————47PerfectCRM实现CRM客户报名流程————————
 
             models.ClassList.objects.create(class_type=1, semester=2, start_date='2018-03-20', branch_id=1, course_id=1)
             models.ClassList.objects.create(class_type=0, semester=5, start_date='2018-03-20', branch_id=1, course_id=1)
@@ -72,33 +109,36 @@ def crm_Role(request):
 
         return redirect('/DBadd/crm_Role/')
 
+
 # 添加"""10账号表"""  #随机学生
 def crm_UserProfile(request):
     if request.method == "GET":
         user_list = models.UserProfile.objects.all()
-        return render(request, 'DBadd/crm_UserProfile.html', {'user_list': user_list})
+        return render(request, 'crm_UserProfile.html', {'user_list': user_list})
     elif request.method == "POST":
         for i in range(50):
-            n = faker.name()
-            # a = models.UserProfile.objects.values("user_id").all()
-            # e = auth_models.User.objects.values("id").all()
-            # print('eeeee', e, type(e))
-            # x = e.difference(a)
+
+            Rword = ''.join(''.join([chr(random.randint(0x4E00, 0x9FBF)) for i in range(3)]).split())  # 随机中文
+            n = Rword
+
+            a = models.UserProfile.objects.values("user_id").all()
+            e = auth_models.User.objects.values("id").all()
+            print('eeeee', e, type(e))
+            x = e.difference(a)
             # for i in x:
             #     print('zzz', x, type(x))
 
             l = []
-            # for i in x:
-            #     l.append(i['id'])
-            # print('llll', l, type(l))
+            for i in x:
+                l.append(i['id'])
+            print('llll', l, type(l))
 
-            # if len(l) == 0:
-            if 0:
+            if len(l) == 0:
                 return HttpResponse('请添加 admin的用户后，再来添加。。。')
             else:
-                # c = choice(l)
-                # u = c
-                models.UserProfile.objects.create(name=n, email=faker.email())
+                c = choice(l)
+                u = c
+                models.UserProfile.objects.create(name=n, user_id=u)
         return redirect('/DBadd/crm_UserProfile/')
 
 
@@ -143,27 +183,30 @@ def crm_Customer(request):
         return render(request, 'DBadd/crm_Customer.html', {'user_list': user_list})
     elif request.method == "POST":
         for i in range(50):
-            Rword = faker.name()
-            r=random.randint(5,18)
+            Rword = ''.join(''.join([chr(random.randint(0x4E00, 0x9FBF)) for i in range(3)]).split())  # 随机中文
+            r = random.randint(5, 18)
             Num = "".join(random.choice("0123456789") for i in range(r))  # 随机数字 #保证qq的唯一性
-            Cnum = "".join(random.choice("123456789") for i in range(1))  # 随机数字  #不能选择0
+            Cnum = "".join(random.choice("123456789") for i in range(1))  # 随机数字  #id 不能选择0
             try:
-                print(Rword, r, Num, Cnum)
                 models.Customer.objects.create(name=Rword, qq=Num, qq_name=Rword, phone=Num, source=1,
                                                referral_from=Rword, consult_courses_id=1, content=Rword,
-                                               consultant_id=Cnum, memo=Rword, date='2018-03-21')
+                                               consultant_id=Cnum, memo=Rword, date='2018-03-20')
             except:
                 return HttpResponse('数据重复了。。。')
 
         return redirect('/DBadd/crm_Customer/')
 
+
+# ————————03PerfectCRM创建基本数据————————
+
+# ————————48PerfectCRM实现CRM客户报名流程学生合同————————
 def crm_ContractTemplate(request):
     if request.method == "GET":
         user_list = models.ContractTemplate.objects.all()
-        return render(request, 'DBadd/crm_ContractTemplate.html', {'user_list':user_list})
+        return render(request, 'DBadd/crm_ContractTemplate.html', {'user_list': user_list})
     elif request.method == "POST":
         try:
-            t= '''
+            t = '''
             委托方：＿＿{stu_name}＿＿ 
 　　法定代表人或负责人：＿＿{stu_name}＿＿ 
 　　服务方：＿＿＿＿＿＿＿ 
@@ -217,12 +260,16 @@ def crm_ContractTemplate(request):
 　　开户银行：＿＿＿＿＿＿＿＿＿　　　　　开户银行：＿＿＿＿＿＿＿＿＿ 
 　　帐号：＿＿＿＿＿＿＿＿＿＿＿　　　　　帐号：＿＿＿＿＿＿＿＿＿＿＿'''
 
-            models.ContractTemplate.objects.create(name='技术合同：专业技术培训协议',template=t)
+            models.ContractTemplate.objects.create(name='技术合同：专业技术培训协议', template=t)
         except:
             return HttpResponse('数据错误！重复了吧。。。')
 
-        return  redirect('/DBadd/crm_ContractTemplate/')
+        return redirect('/DBadd/crm_ContractTemplate/')
 
+
+# ————————48PerfectCRM实现CRM客户报名流程学生合同————————
+
+# ————————60PerfectCRM实现CRM学生上课记录————————
 def DBadd(request):
     return  render(request,'DBadd/DBadd.html',locals())
 
@@ -239,8 +286,9 @@ def crm_CourseRecord(request):
                 models.CourseRecord.objects.create(from_class_id=2, day_num=a, teacher_id=1, has_homework=1, outline=1,date='2018-05-05')
                 models.CourseRecord.objects.create(from_class_id=3, day_num=a, teacher_id=1, has_homework=1, outline=1,date='2018-05-05')
                 a+=1
+                # 创建班级  节课
             except:
-                return HttpResponse('数据错误！重复了吧。。。')
+                return HttpResponse('数据错误！学习记录重复了吧。。。')
         return redirect('/DBadd/crm_CourseRecord/')
 
 def crm_Enrollment(request):
@@ -248,7 +296,7 @@ def crm_Enrollment(request):
         user_list = models.Enrollment.objects.all()
         return render(request, 'DBadd/crm_Enrollment.html', {'user_list': user_list})
     elif request.method == "POST":
-        a=1
+        a=3
         for i in range(6):
             try:
                 # 创建报名信息
@@ -258,5 +306,8 @@ def crm_Enrollment(request):
                 a+=1
                 # 创建报名信息
             except:
-                return HttpResponse('数据错误！重复了吧。。。')
+                return HttpResponse('数据错误！06学员报名信息表重复了吧。。。')
         return redirect('/DBadd/crm_Enrollment/')
+# ————————60PerfectCRM实现CRM学生上课记录————————
+
+# crm_views.py
