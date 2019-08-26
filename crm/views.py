@@ -17,6 +17,7 @@ from django.db.models import Sum
 from crm import models, forms
 from crm.pagination import Page
 from PerfectCRM import settings
+from permissions.permission import check_permission
 
 # 发送邮件的功能 #验证码#密码
 class stmp():
@@ -45,7 +46,8 @@ class stmp():
         print('发送邮件成功！没收到要换标题！检查发送邮箱的配置！')
 
 # 报名填写 销售
-@login_required  # 登陆后页面才能访问
+@login_required 
+@check_permission
 def enrollment(request, customer_id):
     msgs = {}  # 错误信息
     customer_obj = models.Customer.objects.get(id=customer_id)  # 取到客户信息记录 #返回到页面#报名人
@@ -115,7 +117,7 @@ def stu_registration(request,enroll_id,random_str):
     # enroll_obj=models.Enrollment.objects.get(id=enroll_id)#获取报名记录
     if cache.get(enroll_id) == random_str:  # 判断链接失效了没有
         enroll_obj = models.Enrollment.objects.get(id=enroll_id)  # 报名记录
-# ————————50PerfectCRM实现CRM客户报名流程学生合同URL随机码————————
+        # ————————50PerfectCRM实现CRM客户报名流程学生合同URL随机码————————
 
         # ————————51PerfectCRM实现CRM客户报名流程学生合同上传照片————————
         enrolled_path='%s/%s/'%(settings.ENROLLED_DATA,enroll_id)#证件上传路径
@@ -169,7 +171,7 @@ def stu_registration(request,enroll_id,random_str):
 
         return render(request,'crm/stu_registration.html',locals())
         # ————————50PerfectCRM实现CRM客户报名流程学生合同URL随机码————————
-# ————————48PerfectCRM实现CRM客户报名流程学生合同————————
+    # ————————48PerfectCRM实现CRM客户报名流程学生合同————————
     # ————————50PerfectCRM实现CRM客户报名流程学生合同URL随机码————————
     else:
         return HttpResponse('链接失效，非法链接，请自重！')
@@ -203,6 +205,9 @@ def contract_prompt(request,enroll_id):
     customers_form= forms.CustomerForm(instance=enroll_obj.customer)#学员的信息
     return render(request,'crm/contract_prompt.html',locals())
 # #待审核
+
+@login_required
+@check_permission
 def not_audit(request):
     # sign=models.Enrollment.objects.all()#所有的报名表
     # print(sign,'sign----->')
@@ -214,7 +219,8 @@ def not_audit(request):
     return render(request, 'crm/not_audit.html', locals())#
 
 #审核合同
-@login_required # 登陆后页面才能访问
+@login_required
+@check_permission
 def contract_review(request,enroll_id):
     enroll_obj=models.Enrollment.objects.get(id=enroll_id)#取对象
     contract_review = request.user.name #当前登陆人 #合同审核人
@@ -240,6 +246,8 @@ def enrollment_rejection(request,enroll_id):
     enroll_obj.save() #保存
     return redirect('/crm/customer/%s/enrollment/'%enroll_obj.customer.id)#跳转到enrollment_rejection
 
+@login_required
+@check_permission
 def not_payment(request):
 
     # ————————68PerfectCRM实现CRM业务流程(bpm)报名缴费分页————————
@@ -253,6 +261,8 @@ def not_payment(request):
 
     return render(request, 'crm/not_payment.html', locals())#
 # 已缴费
+@login_required
+@check_permission
 def already_payment(request):
 
     # ————————68PerfectCRM实现CRM业务流程(bpm)报名缴费分页————————
@@ -266,7 +276,8 @@ def already_payment(request):
 
     return render(request, 'crm/already_payment.html', locals())#
 #缴费视图
-@login_required # 登陆后页面才能访问
+@login_required
+@check_permission
 def payment(request,enroll_id):
     # ————————68PerfectCRM实现CRM业务流程(bpm)报名缴费分页————————
     # sign=models.Payment.objects.all()#所有的报名表#前端对比用户#缴费记录
@@ -309,6 +320,7 @@ def payment(request,enroll_id):
     return render(request, 'crm/payment.html', locals())
 
 @login_required
+@check_permission
 def student_course(request):
     if request.user.stu_account:
         enrollmentlist=request.user.stu_account.enrollment_set.all()#根据账号表关联的ID获取06学员报名信息表
@@ -319,7 +331,8 @@ def student_course(request):
     return  render(request, 'crm/student_course.html', locals())
 
 #学生上课记录列表
-@login_required # 登陆后页面才能访问
+@login_required
+@check_permission
 def studyrecords(request,enroll_obj_id):
     enroll_obj=models.Enrollment.objects.get(id=enroll_obj_id)#根据ID获取06学员报名信息表
     studyrecordlist=enroll_obj.studyrecord_set.all()#根据06学员报名信息表的ID获取09学习纪录
@@ -329,7 +342,8 @@ def studyrecords(request,enroll_obj_id):
     
     return render(request,'crm/studyrecords.html',locals())
 
-@login_required#登陆才能访问
+@login_required
+@check_permission
 def homework_detail(request,enroll_obj_id,studyrecord_id):
     studyrecord_obj=models.StudyRecord.objects.get(id=studyrecord_id)#取学习记录 对象
     enroll_obj=models.Enrollment.objects.get(id=enroll_obj_id)#取班级对象
@@ -380,6 +394,7 @@ def homework_detail(request,enroll_obj_id,studyrecord_id):
 
 #讲师班级
 @login_required
+@check_permission
 def teacher_class(request):
     # user_id=request.user.id #当前登陆的ID
     # classlist=models.UserProfile.objects.get(id=user_id).classlist_set.all()#讲师所教班级
@@ -391,6 +406,7 @@ def teacher_class(request):
 
 # 讲师班级课节详情
 @login_required
+@check_permission
 def teacher_class_detail(request,class_id):
     # classes_obj=models.UserProfile.objects.get(id=user_id).classlist_set.get(id=class_id)#所选的班级
     classes_obj=request.user.classlist_set.get(id=class_id) #根据 登陆的ID 获取02班级表
@@ -402,7 +418,8 @@ def teacher_class_detail(request,class_id):
 
 # ————————63PerfectCRM实现CRM讲师下载作业————————
 # 本节课的学员
-@login_required  # 登陆后页面才能访问
+@login_required
+@check_permission
 def teacher_lesson_detail(request, class_id, courserecord_id):
     # classes_obj=models.UserProfile.objects.get(id=request.user.id).classlist_set.get(id=class_id)#所选的班级
     classes_obj = request.user.classlist_set.get( id=class_id ) # 根据 登陆的ID 获取02班级表
@@ -430,7 +447,8 @@ def teacher_lesson_detail(request, class_id, courserecord_id):
     return render( request, 'crm/teacher_lesson_detail.html', locals() )
 
 # 学员作业下载
-@login_required  # 登陆后页面才能访问
+@login_required
+@check_permission
 def howk_down(request, class_id, courserecord_id, studyrecord_id):
     HOMEWORK_path = '%s/%s/%s/%s/' % (settings.HOMEWORK_DATA, class_id, courserecord_id, studyrecord_id)  # 作业目录
     print( '下载作业目录:', HOMEWORK_path )
@@ -492,7 +510,8 @@ def get_ranking_name(class_grade_dic):
 #———— 班级学生详情——#计算 #{排名: (ID, 分数)}#排名查名字————#
 
 #班级学生详情#全班成绩排名 #通过#{排名: (ID, 分数)}#排名查名字
-@login_required  # 登陆后页面才能访问
+@login_required
+@check_permission
 def coursetop_score(request,class_id):
     classes_obj = models.ClassList.objects.get(id=class_id)#通过ID获取02班级表
     class_grade_dic=get_course_grades(classes_obj.id)#{学员ID：分数}        #全班成绩
@@ -507,7 +526,8 @@ def get_already_homework(class_id):
             number += 1  #通过 学习成绩 不等于0 计算#已交作业的数量
     return number
 
-@login_required  # 登陆后页面才能访问
+@login_required
+@check_permission
 def coursetop_homework(request,class_id):
     classes_obj = models.ClassList.objects.get(id=class_id)#通过ID获取02班级表
     class_grade_dic=get_course_grades(classes_obj.id)#{学员ID：分数}        #全班成绩
@@ -530,7 +550,8 @@ def coursetop_homework(request,class_id):
     print('已交作业：',lists)
     return render(request,'crm/coursetop_homework.html',locals())
 
-@login_required  # 登陆后页面才能访问
+@login_required
+@check_permission
 def coursetop_details(request,class_id):
     classes_obj = models.ClassList.objects.get(id=class_id)#通过ID获取02班级表
     enrollmentlist=classes_obj.enrollment_set.all()#通过班级ID，获取06学员报名信息表
@@ -548,7 +569,8 @@ def get_stu_attendance(enroll_obj_id):
             number += 1
     return number
 
-@login_required  # 登陆后页面才能访问
+@login_required
+@check_permission
 def coursetop_attendance(request,class_id):
     classes_obj = models.ClassList.objects.get(id=class_id)#通过ID获取02班级表
     class_grade_dic=get_course_grades(classes_obj.id)#{学员ID：分数}        #全班成绩

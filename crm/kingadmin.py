@@ -119,3 +119,8 @@ class SubMenuMenuAdmin(BaseAdmin):
 site.register(models.Role,RoleAdmin) #11角色表
 site.register(models.FirstLayerMenu,FirstLayerMenuAdmin)  #13一层菜单名
 site.register(models.SubMenu,SubMenuMenuAdmin)   #14二层菜单名
+
+class GroupsAdmin(BaseAdmin):
+    list_display = ['id', 'name']  # 显示字段表头
+    filter_horizontal = ['permissions']  # 复选框
+site.register(models.Groups,GroupsAdmin)   #14二层菜单名

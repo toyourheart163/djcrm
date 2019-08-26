@@ -8,6 +8,7 @@ from  django.contrib.auth.decorators import login_required
 from .app_config import kingadmin_auto_discover
 from .base_admin import site
 from  king_admin import forms
+from permissions.permission import check_permission
 
 kingadmin_auto_discover()
 
@@ -31,6 +32,7 @@ def filter_querysets(request,queryset):
     return query_res,condtions
     
 @login_required
+@check_permission
 def table_data_list(request,app_name,model_name):
     #通过2个参数到base_admin里获取class AdminRegisterException(Exception): 的对象
     admin_obj = site.registered_sites[app_name][model_name]  #base_admin
@@ -82,6 +84,7 @@ def get_queryset_search_result(request,queryset,admin_obj):
     return res
 
 @login_required
+@check_permission
 def table_change(request,app_name,model_name,obj_id):
     admin_obj = site.registered_sites[app_name][model_name]   #获取表对象
                 #kingadmin/forms.py里def CreateModelForm(request,admin_obj):
@@ -109,6 +112,7 @@ def table_index(request,app_name):
     return render(request, 'king_admin/table_index.html', {"site":bases,'app_name':app_name})
 
 @login_required
+@check_permission
 def table_add(request,app_name,model_name):
     admin_obj = site.registered_sites[app_name][model_name]  #获取表对象
     model_form = forms.CreateModelForm(request,admin_obj=admin_obj) ##modelform 生成表单 加验证
@@ -136,6 +140,7 @@ def table_add(request,app_name,model_name):
     return render(request, "king_admin/table_add.html", locals())
 
 @login_required
+@check_permission
 def table_delete(request,app_name,model_name,obj_id):
     admin_obj = site.registered_sites[app_name][model_name]#表类
     objs=admin_obj.model.objects.filter(id=obj_id)#类的对象
@@ -150,6 +155,7 @@ def table_delete(request,app_name,model_name,obj_id):
     return render(request, "king_admin/table_delete.html", locals())#locals 返回一个包含当前范围的局部变量字典。
 
 @login_required
+@check_permission
 def password_reset(request,app_name,model_name,obj_id):
     admin_obj = site.registered_sites[app_name][model_name]#表类
     model_form = forms.CreateModelForm(request,admin_obj=admin_obj)#modelform 生成表单 加验证

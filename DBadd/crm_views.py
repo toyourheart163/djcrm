@@ -114,7 +114,7 @@ def crm_Role(request):
 def crm_UserProfile(request):
     if request.method == "GET":
         user_list = models.UserProfile.objects.all()
-        return render(request, 'crm_UserProfile.html', {'user_list': user_list})
+        return render(request, 'DBadd/crm_UserProfile.html', {'user_list': user_list})
     elif request.method == "POST":
         for i in range(50):
 

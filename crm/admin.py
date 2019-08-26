@@ -116,3 +116,7 @@ admin.site.register(models.Tag)                     #12标签表
 admin.site.register(models.FirstLayerMenu)          #13
 admin.site.register(models.SubMenu)                 #14
 
+class GroupsAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name']  # 显示字段表头
+    filter_horizontal = ['permissions']  # 复选框
+admin.site.register(models.Groups,GroupsAdmin)   #14二层菜单名
