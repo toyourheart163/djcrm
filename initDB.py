@@ -1,16 +1,27 @@
 import sys, os, datetime
 import string, random
 
+pwd = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(pwd)
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', "PerfectCRM.settings")
+
 import django
-from django.contrib.auth.models import User
+django.setup()
+print('init DB')
+
+from faker import Faker
 
 from crm import models
 
-pwd = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(pwd)
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', "djcrm.settings")
-django.setup()
-print('init DB')
+faker = Faker('zh-cn')
+
+try:
+    for i in range(10):
+        u = UserProfile(email=faker.email(), name=faker.name(), password=str(i))
+        u.save()
+        print(u.name)
+except:
+    print('already add user')
 
 try:
 	roles = ['角色学生','角色销售', '角色老师','角色校长','角色系统维护']
@@ -34,6 +45,7 @@ try:
 	class_types = [0,1,2]
 	semesters = [int(x)+1 for x in list(string.digits)]
 	for semester in semesters:
-	    models.ClassList.objects.create(class_type=random.choice[0,1,2], semester=random.choice(semesters), start_date='2018-03-20', branch_id=1, course_id=1)
+	    models.ClassList.objects.create(class_type=random.choice([0,1,2]), semester=random.choice(semesters), start_date='2018-03-20', branch_id=1, course_id=1)
 except:
     print('already add db')
+

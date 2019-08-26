@@ -3,6 +3,7 @@
 from django.forms import ModelForm  #继承forms自定制
 
 from crm import models  #数据库
+
 #报名 销售填写
 class EnrollmentForm(ModelForm):
     def __new__(cls, *args, **kwargs):

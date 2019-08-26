@@ -74,7 +74,7 @@ class UserProfileAdmin(UserAdmin):#用户类,继承上一个类 UserAdmin
     fieldsets = (                 #自定义显示字段
         (None, {'fields': ('email','name', 'password')}),
         # ('个人信息', {'fields': ( 'email','name')}),
-        ('用户权限', {'fields': ('is_active','is_superuser','groups','user_permissions')}),#后台显示配置
+        ('用户权限', {'fields': ('is_active','is_superuser','groups','user_permissions', 'roles')}),#后台显示配置
     )
     #添加自定义字段
     # 覆盖get_fieldsets时使用这个属性创建一个用户。
@@ -86,7 +86,7 @@ class UserProfileAdmin(UserAdmin):#用户类,继承上一个类 UserAdmin
     )
     search_fields = ('email',) #搜索(不能包含CharField)（注意加 逗号 , ）
     ordering = ('email',) #自定义排序，默认'-id'
-    filter_horizontal = ('groups','user_permissions', ) #复选框
+    filter_horizontal = ('groups','user_permissions', 'roles') #复选框
 
 
 class CustomerAdmin(admin.ModelAdmin):
@@ -98,6 +98,7 @@ class CustomerAdmin(admin.ModelAdmin):
     actions = []#定制功能    #测试返回到一个新页面
 
 #注册到 Django Admin里
+admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(models.Branch)                  #01校区表
 admin.site.register(models.ClassList)               #02班级表
 admin.site.register(models.Course)                  #03课程表，可以报名那些课程
@@ -110,6 +111,8 @@ admin.site.register(models.CourseRecord)            #08每节课上课纪录表
 admin.site.register(models.StudyRecord)             #09学习纪录
 # admin.site.register(models.UserProfile)             #10账号表
 # 现在注册这个新UserAdmin ,因为我们不在使用Django的内置权限
-admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(models.Role)                    #11角色表
 admin.site.register(models.Tag)                     #12标签表
+admin.site.register(models.FirstLayerMenu)          #13
+admin.site.register(models.SubMenu)                 #14
+

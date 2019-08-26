@@ -7,16 +7,21 @@ from king_admin.base_admin import site,BaseAdmin
 class UserProfileAdmin(BaseAdmin):#定制Djanago admin
     list_display = ('id', 'email', 'name')  # 显示字段表头
     readonly_fields = ('password',)   # 不可修改，限制
-    filter_horizontal = ('user_permissions','groups') #复选框
+    filter_horizontal = ('user_permissions', 'groups','roles')  # 复选框
     exclude=['last_login']
 
 site.register(models.UserProfile, UserProfileAdmin)
 
+class BranchAdmin(BaseAdmin):
+    list_display = ('id', 'name')
+
+site.register(models.Branch, BranchAdmin)
 # 02班级表
 class ClassListAdmin(BaseAdmin):
     list_display = ['id', 'branch', 'course', 'class_type', 'semester', 'start_date', 'end_date']  # 显示字段表头
     list_filter = ['branch', 'course', 'class_type']  # 过滤器(可以包含ManyToManyField) （注意加 逗号 , ）
     filter_horizontal = ['teachers']  #复选框
+
 site.register(models.ClassList,ClassListAdmin)               #02班级表
 
 #04客户信息表
@@ -90,6 +95,27 @@ class EnrollmentAdmin(BaseAdmin):  # 定制Djanago admin
         # target属性用于表示所链接文件打开到的位置 #记住，“”内的文字只是表示一个对象的名子。
     payment.display_name = "缴费链接"
 
-site.register(models.Enrollment, EnrollmentAdmin)  # 06学员报名信息表
+class StudyRecordAdmin(BaseAdmin):
+    list_display = ('id', 'score')
+
 site.register(models.Customer,CustomerAdmin)
+site.register(models.Enrollment, EnrollmentAdmin)  # 06学员报名信息表
 site.register(models.CourseRecord)
+site.register(models.StudyRecord, StudyRecordAdmin)
+
+# 11角色表
+class RoleAdmin(BaseAdmin):
+    list_display = ['id', 'name']  # 显示字段表头
+    filter_horizontal = ['menus']  # 复选框
+
+# 13一层菜单名
+class FirstLayerMenuAdmin(BaseAdmin):
+    list_display = ['id', 'name', 'url_type', 'url_name', 'order']  # 显示字段表头
+
+# 14二层菜单名
+class SubMenuMenuAdmin(BaseAdmin):
+    list_display = ['id', 'name', 'url_type', 'url_name', 'order']  # 显示字段表头
+
+site.register(models.Role,RoleAdmin) #11角色表
+site.register(models.FirstLayerMenu,FirstLayerMenuAdmin)  #13一层菜单名
+site.register(models.SubMenu,SubMenuMenuAdmin)   #14二层菜单名

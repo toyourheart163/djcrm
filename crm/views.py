@@ -4,16 +4,18 @@ import json
 import datetime  # 获取时间#登陆过期
 import string
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError  #主动捕捉错误信息
 from django.core.cache import cache
 from django.core.mail import send_mail
 from django.http import StreamingHttpResponse #页面返回
+from django.db.models import Sum
 
 # send_mail的参数分别是  邮件标题，邮件内容，发件箱(settings.py中设置过的那个)，收件箱列表(可以发送给多个人),失败静默(若发送失败，报错提示我们)
 
 from crm import models, forms
+from crm.pagination import Page
 from PerfectCRM import settings
 
 # 发送邮件的功能 #验证码#密码
@@ -194,8 +196,6 @@ def stu_registration(request,enroll_id,random_str):
 
     return render(request,'crm/stu_registration.html',locals())
 
-from django.shortcuts import redirect
-#查询流程提示页面
 
 def contract_prompt(request,enroll_id):
     enroll_obj=models.Enrollment.objects.get(id=enroll_id)#取对象
@@ -204,8 +204,13 @@ def contract_prompt(request,enroll_id):
     return render(request,'crm/contract_prompt.html',locals())
 # #待审核
 def not_audit(request):
-    sign=models.Enrollment.objects.all()#所有的报名表
-    print(sign,'sign----->')
+    # sign=models.Enrollment.objects.all()#所有的报名表
+    # print(sign,'sign----->')
+    sign=models.Enrollment.objects.filter(contract_agreed=True,contract_approved=False).all()#所有的报名表
+
+    page = Page(request.GET.get('p', 1), len(sign)) #当前页数 默认为1 #总数量
+    sign = sign[page.start:page.end]  # 切片取当前页的数据
+    page_str = page.page_str('/crm/not_audit/')  #总页数 传入url
     return render(request, 'crm/not_audit.html', locals())#
 
 #审核合同
@@ -235,21 +240,41 @@ def enrollment_rejection(request,enroll_id):
     enroll_obj.save() #保存
     return redirect('/crm/customer/%s/enrollment/'%enroll_obj.customer.id)#跳转到enrollment_rejection
 
-# #待缴费
 def not_payment(request):
-    sign=models.Enrollment.objects.all()#所有的报名表
-    return render(request, 'crm/not_payment.html', locals())#
 
+    # ————————68PerfectCRM实现CRM业务流程(bpm)报名缴费分页————————
+    # sign=models.Enrollment.objects.all()#所有的报名表
+    sign=models.Enrollment.objects.filter(contract_approved=True,Pay_cost=False).all()#所有的报名表
+
+    page = Page(request.GET.get('p', 1), len(sign)) #当前页数 默认为1 #总数量
+    sign = sign[page.start:page.end]  # 切片取当前页的数据
+    page_str = page.page_str('/crm/not_payment/')  #总页数 传入url
+    # ————————68PerfectCRM实现CRM业务流程(bpm)报名缴费分页————————
+
+    return render(request, 'crm/not_payment.html', locals())#
 # 已缴费
 def already_payment(request):
-    sign=models.Enrollment.objects.all()#所有的报名表
-    return render(request, 'crm/already_payment.html', locals())#
 
+    # ————————68PerfectCRM实现CRM业务流程(bpm)报名缴费分页————————
+    # sign=models.Enrollment.objects.all()#所有的报名表
+    sign=models.Enrollment.objects.filter(contract_approved=True,Pay_cost=True).all()#所有的报名表
+
+    page = Page(request.GET.get('p', 1), len(sign)) #当前页数 默认为1 #总数量
+    sign = sign[page.start:page.end]  # 切片取当前页的数据
+    page_str = page.page_str('/crm/already_payment/')  #总页数 传入url
+    # ————————68PerfectCRM实现CRM业务流程(bpm)报名缴费分页————————
+
+    return render(request, 'crm/already_payment.html', locals())#
 #缴费视图
 @login_required # 登陆后页面才能访问
 def payment(request,enroll_id):
-    sign=models.Payment.objects.all()#所有的报名表#前端对比用户#缴费记录
+    # ————————68PerfectCRM实现CRM业务流程(bpm)报名缴费分页————————
+    # sign=models.Payment.objects.all()#所有的报名表#前端对比用户#缴费记录
+    # ————————68PerfectCRM实现CRM业务流程(bpm)报名缴费分页————————
     enroll_obj=models.Enrollment.objects.get(id=enroll_id)#取对象
+    # ————————68PerfectCRM实现CRM业务流程(bpm)报名缴费分页————————
+    sign=models.Payment.objects.filter(customer=enroll_obj.customer).all()#所有的报名表#前端对比用户#缴费记录
+    # ————————68PerfectCRM实现CRM业务流程(bpm)报名缴费分页————————
     errors={}  #错误信息
     if request.method=="POST":
         payment_amount=request.POST.get('amount')#缴费金额
@@ -274,12 +299,23 @@ def payment(request,enroll_id):
             errors['err']='金额不能为空！'
     else:
         payment_form= forms.PaymentForm()#生成表单
+
+    # ————————68PerfectCRM实现CRM业务流程(bpm)报名缴费分页————————
+    page = Page( request.GET.get( 'p', 1 ), len( sign ) )  # 当前页数 默认为1 #总数量
+    sign = sign[page.start:page.end]  # 切片取当前页的数据
+    page_str = page.page_str( '/crm/payment/%s/'%enroll_id )  # 总页数 传入url
+    # ————————68PerfectCRM实现CRM业务流程(bpm)报名缴费分页————————
+
     return render(request, 'crm/payment.html', locals())
 
 @login_required
 def student_course(request):
     if request.user.stu_account:
         enrollmentlist=request.user.stu_account.enrollment_set.all()#根据账号表关联的ID获取06学员报名信息表
+        page = Page(request.GET.get('p', 1), len(enrollmentlist)) #当前页数 默认为1 #总数量
+        enrollmentlist = enrollmentlist[page.start:page.end]  # 切片取当前页的数据
+        page_str = page.page_str('/crm/student_course/')  #总页数 传入url
+        
     return  render(request, 'crm/student_course.html', locals())
 
 #学生上课记录列表
@@ -287,6 +323,10 @@ def student_course(request):
 def studyrecords(request,enroll_obj_id):
     enroll_obj=models.Enrollment.objects.get(id=enroll_obj_id)#根据ID获取06学员报名信息表
     studyrecordlist=enroll_obj.studyrecord_set.all()#根据06学员报名信息表的ID获取09学习纪录
+    page = Page(request.GET.get('p', 1), len(studyrecordlist)) #当前页数 默认为1 #总数量
+    studyrecordlist = studyrecordlist[page.start:page.end]  # 切片取当前页的数据
+    page_str = page.page_str('/crm/studyrecords/%s/'%enroll_obj_id)  #总页数 传入url
+    
     return render(request,'crm/studyrecords.html',locals())
 
 @login_required#登陆才能访问
@@ -344,6 +384,9 @@ def teacher_class(request):
     # user_id=request.user.id #当前登陆的ID
     # classlist=models.UserProfile.objects.get(id=user_id).classlist_set.all()#讲师所教班级
     classes_obj=request.user.classlist_set.all() #根据 登陆的ID 获取02班级表
+    page = Page(request.GET.get('p', 1), len(classes_obj)) #当前页数 默认为1 #总数量
+    classes_obj = classes_obj[page.start:page.end]  # 切片取当前页的数据
+    page_str = page.page_str('/crm/teacher_class/')  #总页数 传入url
     return render(request,'crm/teacher_class.html',locals())
 
 # 讲师班级课节详情
@@ -352,25 +395,10 @@ def teacher_class_detail(request,class_id):
     # classes_obj=models.UserProfile.objects.get(id=user_id).classlist_set.get(id=class_id)#所选的班级
     classes_obj=request.user.classlist_set.get(id=class_id) #根据 登陆的ID 获取02班级表
     courserecordlist=classes_obj.courserecord_set.all()#根据 02班级表的ID 获取09学习纪录
+    page = Page( request.GET.get( 'p', 1 ), len( courserecordlist ) )  # 当前页数 默认为1 #总数量
+    courserecordlist = courserecordlist[page.start:page.end]  # 切片取当前页的数据
+    page_str = page.page_str('/crm/teacher_class_detail/%s/'%class_id) #总页数 传入url
     return render(request, 'crm/teacher_classes_detail.html', locals())
-
-# 讲师班级
-@login_required  # 登陆后页面才能访问
-def teacher_class(request):
-    # user_id=request.user.id #当前登陆的ID
-    # classlist=models.UserProfile.objects.get(id=user_id).classlist_set.all()#讲师所教班级
-    classes_obj = request.user.classlist_set.all()  # 根据 登陆的ID 获取02班级表
-    return render( request, 'bpm_teacher/teacher_class.html', locals() )
-
-# 讲师班级课节详情
-@login_required  # 登陆后页面才能访问
-def teacher_class_detail(request, class_id):
-    # user_id=request.user.id #当前登陆的ID
-    # classes_obj=models.UserProfile.objects.get(id=user_id).classlist_set.get(id=class_id)#所选的班级
-    classes_obj = request.user.classlist_set.get( id=class_id )  # 根据 登陆的ID 获取02班级表
-    courserecordlist = classes_obj.courserecord_set.all()  # 根据 02班级表的ID 获取09学习纪录
-    return render( request, 'bpm_teacher/teacher_classes_detail.html', locals() )
-# ————————62PerfectCRM实现CRM讲师讲课记录————————
 
 # ————————63PerfectCRM实现CRM讲师下载作业————————
 # 本节课的学员
@@ -396,7 +424,10 @@ def teacher_lesson_detail(request, class_id, courserecord_id):
                     studyrecord_list.filter( id=studyrecord_id ).update( delivery=False )  # file_list 出错# 更新交付作业状态
             else:
                 studyrecord_list.filter( id=studyrecord_id ).update( delivery=False )# 更新交付作业状态
-    return render( request, 'bpm_teacher/teacher_lesson_detail.html', locals() )
+    page = Page( request.GET.get( 'p', 1 ), len( studyrecord_list ) )  # 当前页数 默认为1 #总数量
+    studyrecord_list = studyrecord_list[page.start:page.end]  # 切片取当前页的数据
+    page_str = page.page_str('/crm/teacher_lesson_detail/%s/%s/'%(class_id,courserecord_id)) # 总页数 传入url
+    return render( request, 'crm/teacher_lesson_detail.html', locals() )
 
 # 学员作业下载
 @login_required  # 登陆后页面才能访问
@@ -426,4 +457,117 @@ def howk_down(request, class_id, courserecord_id, studyrecord_id):
             return response  # 返回下载 请求的内容
         except:
             models.StudyRecord.objects.get( id=studyrecord_id ).update( delivery=False )  # 更新交付作业状态 # file_list 出错
-    return redirect( '/bpm/teacher_lesson_detail/%s/%s/' % (class_id, courserecord_id) )  # 返回##本节课的学员
+    return redirect( '/crm/teacher_lesson_detail/%s/%s/' % (class_id, courserecord_id) )  # 返回##本节课的学员
+
+def get_course_grades(class_obj):#返回整个班级的成绩
+    c=models.StudyRecord.objects.filter(course_record__from_class=class_obj).values_list('student')
+    a=Sum('score')#Sum返回数组中所有值的和   #学习成绩
+    e=c.annotate(a) #annotate数据库的数据聚合函数
+    class_grade_dic=dict(e)#{1: 285, 16: 190}#{学员ID：分数}
+    print( '全班成绩:', class_grade_dic)
+    return class_grade_dic   #as class_grade_dic
+
+#班级学生详情#计算 #学员ID：排名
+def get_course_ranking(class_grade_dic):#返回整个班级的排名数据
+    ranking_list = sorted(class_grade_dic.items(),key=lambda x:x[1],reverse=True)#进行排序后的列表#以第2个参数对比#倒序
+    print('成绩排序：',ranking_list)
+    ranking_dic = {}
+    for item in ranking_list:
+        ranking_dic[item[0]] = [item[1], ranking_list.index(item)+1] #循环添加 排名数 到 排序后的列表
+    print( '全班排名:', ranking_dic)#{1: [285, 1], 10: [280, 2], }#{学员ID: [分数, 排名] }
+    return ranking_dic
+
+# ————————65PerfectCRM实现CRM课程分数排名————————
+#———— 班级学生详情——#计算 #{排名: (ID, 分数)}#排名查名字————#
+def get_ranking_name(class_grade_dic):
+    lists=[]
+    ranking_list = sorted(class_grade_dic.items(),key=lambda x:x[1],reverse=True)#进行排序后的列表#以第2个参数对比#倒序
+    #ranking_list [(1, 285), (10, 280)] #按分高排序的ID顺序
+    for item in ranking_list:
+        temp={}
+        temp[ranking_list.index(item) + 1] = item  # 循环添加 排名数 到 排序后的列表
+        lists.append(temp)
+    print( '排名查名字：', lists )#[{1: (1, 285)}, {2: (10, 280)}]#[{排名: (学员ID, 分数)}]
+    return lists
+#———— 班级学生详情——#计算 #{排名: (ID, 分数)}#排名查名字————#
+
+#班级学生详情#全班成绩排名 #通过#{排名: (ID, 分数)}#排名查名字
+@login_required  # 登陆后页面才能访问
+def coursetop_score(request,class_id):
+    classes_obj = models.ClassList.objects.get(id=class_id)#通过ID获取02班级表
+    class_grade_dic=get_course_grades(classes_obj.id)#{学员ID：分数}        #全班成绩
+    lists=get_ranking_name(class_grade_dic)#计算#[{排名: (学员ID, 分数)}]  #按分高排序的ID顺序
+    return render(request,'crm/coursetop_score.html',locals())
+
+def get_already_homework(class_id):
+    score_list = models.StudyRecord.objects.select_related().filter(student=class_id ).values_list( 'score' )#学习成绩
+    number = 0
+    for score in score_list:
+        if score != (0,):  # (0,"N/A")
+            number += 1  #通过 学习成绩 不等于0 计算#已交作业的数量
+    return number
+
+@login_required  # 登陆后页面才能访问
+def coursetop_homework(request,class_id):
+    classes_obj = models.ClassList.objects.get(id=class_id)#通过ID获取02班级表
+    class_grade_dic=get_course_grades(classes_obj.id)#{学员ID：分数}        #全班成绩
+    ranking_dic=get_course_ranking(class_grade_dic)#{学员ID: [分数, 排名] } #全班排名
+    enrollmentlist=classes_obj.enrollment_set.all()#通过班级ID，获取06学员报名信息表
+
+    dict = {}#{1: 3, 4: 2,}#{学员ID: 数量}
+    for item in enrollmentlist:
+        d = get_already_homework( item.id )#根据06学员报名信息表#学员ID #计算#学员已交作业的数量
+        dict[item.id]= d
+
+    list = sorted(dict.items(),key=lambda x:x[1])#进行排序后的列表#以第2个参数对比
+    #list[ (4, 2), (16, 2)]    #list[ (学员ID, 数量)]
+
+    lists=[] #[{1: (19, 0)}, {2: (20, 0)}]#[{排名: (学员ID, 数量)}]
+    for item in list:
+        temp={}
+        temp[list.index( item ) + 1] = item  # 循环添加 排名数 到 排序后的列表 #按已交作业数量排序
+        lists.append(temp)
+    print('已交作业：',lists)
+    return render(request,'crm/coursetop_homework.html',locals())
+
+@login_required  # 登陆后页面才能访问
+def coursetop_details(request,class_id):
+    classes_obj = models.ClassList.objects.get(id=class_id)#通过ID获取02班级表
+    enrollmentlist=classes_obj.enrollment_set.all()#通过班级ID，获取06学员报名信息表
+
+    class_grade_dic=get_course_grades(classes_obj.id)#{学员ID：分数}        #全班成绩 # coursetop_tags.py 根据id 找对应的分数
+    ranking_dic=get_course_ranking(class_grade_dic)#{学员ID: [分数, 排名] } #全班排名 # coursetop_tags.py 根据id 找对应的排名
+
+    return render(request,'crm/coursetop_details.html',locals())
+
+def get_stu_attendance(enroll_obj_id):
+    attendance_list=models.StudyRecord.objects.select_related().filter(student=enroll_obj_id).values_list('attendance')
+    number=0
+    for attendance in attendance_list:
+        if attendance == (0,) :
+            number += 1
+    return number
+
+@login_required  # 登陆后页面才能访问
+def coursetop_attendance(request,class_id):
+    classes_obj = models.ClassList.objects.get(id=class_id)#通过ID获取02班级表
+    class_grade_dic=get_course_grades(classes_obj.id)#{学员ID：分数}        #全班成绩
+    ranking_dic=get_course_ranking(class_grade_dic)#{学员ID: [分数, 排名] } #全班排名
+    enrollmentlist=classes_obj.enrollment_set.all()#通过班级ID，获取06学员报名信息表
+
+    dict = {} #{1: 3, 4: 2,}#{学员ID: 次数}
+    for item in enrollmentlist:
+        d = get_stu_attendance( item.id )#根据06学员报名信息表#学员ID #计算#学员学员出勤次数
+        dict[item.id]= d # 循环添加 {学员ID: 次数} #排序后的字典
+
+    list = sorted(dict.items(),key=lambda x:x[1])#进行排序后的列表#以第2个参数对比 #按出勤次数少到多排序
+    #list[ (4, 2), (16, 2)]    #list[ (学员ID, 次数)]
+
+    lists=[]#[{1: (19, 3)}, {2: (20, 1)}]#[{排名: (学员ID, 次数)}]
+    for item in list:
+        temp={}
+        temp[list.index( item ) + 1] = item  # 循环添加 排名数 #排序后的列表
+        lists.append(temp)
+    print('全班出勤',lists)
+    return render(request,'crm/coursetop_attendance.html',locals())
+# ————————67PerfectCRM实现CRM课程出勤排名————————
