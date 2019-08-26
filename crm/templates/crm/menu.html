@@ -1,8 +1,6 @@
 {#menu.html#}
 
  {## ————————71PerfectCRM实现CRM项目首页————————#}
-<h4><a href="{% url 'gbacc_logout' %}">重新登陆账号：</a>{{ request.user.name }}</h4>
-
 {# 账号表  分配角色  夸表关联 角色表#}
 {% for role in request.user.roles.all %} {# 循环开始  role#}
     <h3 class="label-danger ">{{ role.name }}的菜单</h3>
@@ -15,19 +13,14 @@
             </a>
         </li>
 
-        {% for menu in menu.sub_menus.all %} {# 循环开始  sub_menus#}
+        {% for menu in menu.sub_menus.all %}
             <li >
-
-                {#如果URL路径类型等于相对路径的URL      # URL +  URL路径 #} {# 否则         URL路径     #}
                 <a href="{% if menu.url_type == 0 %}{% url menu.url_name %}{% else %} {{ menu.url_name }}{% endif %}">
-                    {{ menu.name }} {# 动态菜单  菜单名#}
                 </a>
             </li>
-        {% endfor %} {# 循环结束  sub_menus#}
-    {% endfor %} {# 循环结束  menu#}
+        {% endfor %}
+    {% endfor %}
 
-{% endfor %} {# 循环结束  role#}
-
- {## ————————71PerfectCRM实现CRM项目首页————————#}
+{% endfor %}
 
 {#menu.html#}
