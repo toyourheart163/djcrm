@@ -7,7 +7,7 @@ from king_admin.base_admin import site,BaseAdmin
 class UserProfileAdmin(BaseAdmin):#定制Djanago admin
     list_display = ('id', 'email', 'name')  # 显示字段表头
     readonly_fields = ('password',)   # 不可修改，限制
-    filter_horizontal = ('user_permissions','groups') #复选框
+    filter_horizontal = ('user_permissions', 'groups','roles')  # 复选框
     exclude=['last_login']
 
 site.register(models.UserProfile, UserProfileAdmin)
@@ -103,8 +103,19 @@ site.register(models.Enrollment, EnrollmentAdmin)  # 06学员报名信息表
 site.register(models.CourseRecord)
 site.register(models.StudyRecord, StudyRecordAdmin)
 
+# 11角色表
 class RoleAdmin(BaseAdmin):
-    # 11 role
-    list_display = ('id', 'name')
+    list_display = ['id', 'name']  # 显示字段表头
+    filter_horizontal = ['menus']  # 复选框
 
-site.register(models.Role, RoleAdmin)
+# 13一层菜单名
+class FirstLayerMenuAdmin(BaseAdmin):
+    list_display = ['id', 'name', 'url_type', 'url_name', 'order']  # 显示字段表头
+
+# 14二层菜单名
+class SubMenuMenuAdmin(BaseAdmin):
+    list_display = ['id', 'name', 'url_type', 'url_name', 'order']  # 显示字段表头
+
+site.register(models.Role,RoleAdmin) #11角色表
+site.register(models.FirstLayerMenu,FirstLayerMenuAdmin)  #13一层菜单名
+site.register(models.SubMenu,SubMenuMenuAdmin)   #14二层菜单名

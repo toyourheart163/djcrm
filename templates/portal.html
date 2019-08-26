@@ -1,19 +1,87 @@
 {#portal.html#}
 {## ————————46PerfectCRM实现登陆后页面才能访问————————#}
-{% extends 'king_admin/table_index.html' %}
-{% block right-container %}
-<div class="container col-lg-offset-3">
-    <h2><a class="form-signin-heading" href="/king_admin/">King_admin主页</a> </h2>
-    <h2><a class="form-signin-heading" href="/king_admin/crm/">单个具体app页面</a> </h2>
-    <h2><a class="form-signin-heading" href="/king_admin/crm/userprofile/">详细内容</a> </h2>
-    <h2><a class="form-signin-heading" href="/king_admin/crm/userprofile/1/change/">修改信息</a> </h2>
-    <h2><a class="form-signin-heading" href="/king_admin/crm/userprofile/1/password/">修改密码</a> </h2>
-    <h2><a class="form-signin-heading" href="/king_admin/crm/userprofile/add/">添加信息</a> </h2>
-    <h2><a class="form-signin-heading" href="/king_admin/crm/userprofile/1/delete/">删除信息</a> </h2>
-</div>
-
-{% endblock %}
+{#{% extends 'king_admin/table_index.html' %}#}
+{#{% block right-container-content %}#}
+{#<div class="container col-lg-offset-3">#}
+{#    <h2><a class="form-signin-heading" href="/king_admin/">King_admin主页</a> </h2>#}
+{#    <h2><a class="form-signin-heading" href="/king_admin/crm/">单个具体app页面</a> </h2>#}
+{#    <h2><a class="form-signin-heading" href="/king_admin/crm/userprofile/">详细内容</a> </h2>#}
+{#    <h2><a class="form-signin-heading" href="/king_admin/crm/userprofile/1/change/">修改信息</a> </h2>#}
+{#    <h2><a class="form-signin-heading" href="/king_admin/crm/userprofile/1/password/">修改密码</a> </h2>#}
+{#    <h2><a class="form-signin-heading" href="/king_admin/crm/userprofile/add/">添加信息</a> </h2>#}
+{#    <h2><a class="form-signin-heading" href="/king_admin/crm/userprofile/1/delete/">删除信息</a> </h2>#}
+{#</div>#}
+{##}
+{#{% endblock %}#}
 
 {## ————————46PerfectCRM实现登陆后页面才能访问————————#}
+
+{## ————————71PerfectCRM实现CRM项目首页————————#}
+{% extends "crm/bpm_sample.html" %}
+{% load staticfiles %}
+{% block right-container-content %}
+    <div class="col-md-12">
+        <div class="row">
+            <div class="portfolio-items isotopeWrapper clearfix">
+
+                <article class="col-md-3 isotopeItem photography">
+                    <div class="portfolio-item">
+                        <a href="{% url 'student_course' %}"><img src="{% static 'img/student_icon.jpg' %}"></a>
+                        <div class="portfolio-desc align-center">
+                            <div class="folio-info">
+                                <h3><a href="{% url 'student_course' %}">学员入口</a></h3>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="col-md-3 isotopeItem photography">
+                    <div class="portfolio-item">
+                        <a href="{% url 'not_audit' %}"><img src="{% static 'img/sales_icon.jpg' %}"></a>
+                        <div class="portfolio-desc align-center">
+                            <div class="folio-info">
+                                <h3><a href="{% url 'not_audit' %}">销售入口</a></h3>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="col-md-3 isotopeItem photography">
+                    <div class="portfolio-item">
+                        <a href="{% url 'not_payment' %}"><img src="{% static 'img/financial_icon.jpg' %}"></a>
+                        <div class="portfolio-desc align-center">
+                            <div class="folio-info">
+                                <h3><a href="{% url 'not_payment' %}">财务入口</a></h3>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="col-md-3 isotopeItem photography">
+                    <div class="portfolio-item">
+                        <a href="{% url 'teacher_class' %}"><img src="{% static 'img/teacher_icon.jpg' %}"></a>
+                        <div class="portfolio-desc align-center">
+                            <div class="folio-info">
+                                <h3><a href="{% url 'teacher_class' %}">讲师入口</a></h3>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="col-md-3 isotopeItem photography">
+                    <div class="portfolio-item">
+                        <a href="{% url 'gbacc_fast_login' %}"><img src="{% static 'img/gbacc_fast_login.jpg' %}"></a>
+                        <div class="portfolio-desc align-center">
+                            <div class="folio-info">
+                                <h3><a href="{% url 'gbacc_fast_login' %}">快速注册登陆</a></h3>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{## ————————71PerfectCRM实现CRM项目首页————————#}
 
 {#portal.html#}

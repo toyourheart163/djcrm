@@ -322,6 +322,12 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD ='email'#指定做为  #登陆账号
     REQUIRED_FIELDS = ['name']#必填字段
 
+    branch = models.ForeignKey( "Branch", verbose_name="所属校区", blank=True, null=True, on_delete=models.CASCADE )
+    roles = models.ManyToManyField( 'Role', verbose_name="角色", blank=True )
+    memo = models.TextField( blank=True, null=True, default=None, verbose_name="备注" )
+    from django.utils import timezone
+    date_joined = models.DateTimeField( verbose_name="创建时间", default=timezone.now )
+    
     stu_account=models.ForeignKey("Customer",verbose_name='关联学员帐号',blank=True,null=True,on_delete=models.CASCADE,help_text='报名成功后创建关联帐户')
 
     objects = UserProfileManager()#创建账号 #关联这个函数
@@ -357,7 +363,8 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 """11角色表"""
 class Role(models.Model):
     name = models.CharField(unique=True,max_length=32)#角色名#CharField定长文本#角色名不可以重复#最长度=32字节
-    
+    menus = models.ManyToManyField('FirstLayerMenu',verbose_name='一层菜单',blank=True)
+
     def __str__(self):#__str__()是Python的一个“魔幻”方法，这个方法定义了当object调用str()时应该返回的值。
         return self.name#返回 #角色名
     
@@ -371,3 +378,34 @@ class Tag(models.Model):
         return self.name #返回 #标签名
     class Meta:#通过一个内嵌类 "class Meta" 给你的 model 定义元数据
         verbose_name_plural =  "12标签表" #verbose_name_plural给你的模型类起一个更可读的名字
+
+"""13一层菜单名"""
+class FirstLayerMenu(models.Model):
+    '''第一层侧边栏菜单'''
+    name = models.CharField('一层菜单名',max_length=64)
+    url_type_choices = ((0,'相关的名字'),(1,'固定的URL'))
+    url_type = models.SmallIntegerField(choices=url_type_choices,default=0)
+    url_name = models.CharField(max_length=64,verbose_name='一层菜单路径')
+    order = models.SmallIntegerField(default=0,verbose_name='菜单排序')
+    sub_menus = models.ManyToManyField('SubMenu',blank=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "13第一层菜单"
+
+"""14二层菜单名"""
+class SubMenu(models.Model):
+    '''第二层侧边栏菜单'''
+    name = models.CharField('二层菜单名', max_length=64)
+    url_type_choices = ((0,'相关的名字'),(1,'固定的URL'))
+    url_type = models.SmallIntegerField(choices=url_type_choices,default=0)
+    url_name = models.CharField(max_length=64, verbose_name='二层菜单路径')
+    order = models.SmallIntegerField(default=0, verbose_name='菜单排序')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "14第二层菜单"
