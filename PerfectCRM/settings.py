@@ -24,6 +24,8 @@ SECRET_KEY = '4(2otha94f@@hoh^dw9sr_5rl!9@!1vi&&_b%c5v6am%usjgo9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
+DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 ALLOWED_HOSTS = []
 
@@ -88,6 +90,16 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+if os.getcwd() == '/app':
+    import dj_database_url 
+
+    DATABASES = {
+    'default': dj_database_url.config(default='postgres://localhost') }
+    # 让request.is_secure()承认X-Forwarded-Proto头 
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    # 支持所有的主机头(host header) 
+    ALLOWED_HOSTS = ['*']
 
 
 # Password validation

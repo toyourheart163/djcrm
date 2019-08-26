@@ -49,3 +49,10 @@ try:
 except:
     print('already add db')
 
+try:
+	models.FirstLayerMenu.objects.create(name="销售未审核客户", url_name="not_audit", order=1)
+	models.FirstLayerMenu.objects.create(name="财务未缴费", url_name="not_payment", order=2)
+	models.FirstLayerMenu.objects.create(name="学生我的课程", url_name="student_course", order=3)
+	models.FirstLayerMenu.objects.create(name="讲师我的班级", url_name="teacher_class", order=4)
+except:
+	print('有菜单了')
