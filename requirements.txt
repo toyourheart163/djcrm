@@ -1,7 +1,8 @@
 django==2.2.4
 dj-database-url
 gunicorn
-psycopg2-binary
 faker
 pillow
 whitenoise
+django-heroku
+psycopg2-binary

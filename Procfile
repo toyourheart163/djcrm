@@ -1,1 +1,1 @@
- web: gunicorn PerfectCRM.wsgi --log-file -
+web: gunicorn PerfectCRM.wsgi --log-file -

@@ -7,7 +7,7 @@ __pycache__/
 enrolled_data
 Pipfile
 migrations/
-*.otf
+# *.otf
 
 # C extensions
 *.so

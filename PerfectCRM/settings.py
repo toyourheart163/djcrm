@@ -20,10 +20,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '4(2otha94f@@hoh^dw9sr_5rl!9@!1vi&&_b%c5v6am%usjgo9'
+# SECRET_KEY = '4(2otha94f@@hoh^dw9sr_5rl!9@!1vi&&_b%c5v6am%usjgo9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -90,16 +91,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
-if os.getcwd() == '/app':
-    import dj_database_url 
-
-    DATABASES = {
-    'default': dj_database_url.config(default='postgres://localhost') }
-    # 让request.is_secure()承认X-Forwarded-Proto头 
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    # 支持所有的主机头(host header) 
-    ALLOWED_HOSTS = ['*']
 
 
 # Password validation
@@ -158,3 +149,8 @@ EMAIL_PORT = 465                 #发件箱的SMTP服务器端口 #一般不需�
 EMAIL_HOST_USER = 'perfectcrm@sina.cn'    #发送邮件的邮箱账号     #根据情况重新配置  #perfectcrm@sina.cn   pydjango@sina.cn
 EMAIL_HOST_PASSWORD = 'admin123456'         #发送邮件的邮箱密码    #根据情况重新配置
 HOMEWORK_DATA='%s/crm/static/homeworks'%BASE_DIR
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+import dj_database_url
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
