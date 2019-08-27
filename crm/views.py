@@ -61,7 +61,7 @@ def enrollment(request, customer_id):
         if enroll_form.is_valid():  # 表单验证
 
             # ————————50PerfectCRM实现CRM客户报名流程学生合同URL随机码————————
-            msg = "http://127.0.0.1:8000/crm/customer/registration/{enroll_obj_id}/{random_str}/ "
+            msg = "/crm/customer/registration/{enroll_obj_id}/{random_str}/ "
             random_str = ''.join(random.sample(string.ascii_lowercase + string.digits, 8))  # 生成8位随机字符串 #URL使用
             url_str = '''customer/registration/{enroll_obj_id}/{random_str}/'''  # 报名链接
             # ————————50PerfectCRM实现CRM客户报名流程学生合同URL随机码————————
@@ -99,8 +99,8 @@ def enrollment(request, customer_id):
 
             if email:
                 # ————————50PerfectCRM实现CRM客户报名流程学生合同URL随机码————————
-                # msg_mail = "http://127.0.0.1:8000/crm/customer/registration/%s" %enroll_obj.id
-                msg_mail = "http://127.0.0.1:8000/crm/customer/registration/%s/%s" %(enroll_obj.id,random_str)
+                # msg_mail = "/crm/customer/registration/%s" %enroll_obj.id
+                msg_mail = "/crm/customer/registration/%s/%s" %(enroll_obj.id,random_str)
                 # ————————50PerfectCRM实现CRM客户报名流程学生合同URL随机码————————
                 stmpemail.stmps(request, email, msg_mail)  # 发送邮件
                 stmp_mail['ok'] = "邮件已发送成功！"
