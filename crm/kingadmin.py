@@ -26,10 +26,10 @@ site.register(models.ClassList,ClassListAdmin)               #02班级表
 
 #04客户信息表
 class CustomerAdmin(BaseAdmin):#定制Djanago admin
-    list_display = ('id', 'qq', 'source', 'consultant', 'content', 'date','status','enroll')  # 显示字段表头
+    list_display = ('id', 'contact_type', 'contact', 'source', 'consultant', 'content', 'date','status','enroll')  # 显示字段表头
     list_per_page = 10
     list_filter = ('date', 'source','consultant','consult_courses',)
-    search_fields = ('name', 'qq')
+    search_fields = ('name', 'contact')
     actions = []#定制功能    #测试返回到一个新页面
     ordering = '-qq'
     filter_horizontal = ('tags',)

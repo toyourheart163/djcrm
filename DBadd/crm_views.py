@@ -188,7 +188,7 @@ def crm_Customer(request):
             Num = "".join(random.choice("0123456789") for i in range(r))  # 随机数字 #保证qq的唯一性
             Cnum = "".join(random.choice("123456789") for i in range(1))  # 随机数字  #id 不能选择0
             try:
-                models.Customer.objects.create(name=Rword, qq=Num, qq_name=Rword, phone=Num, source=1,
+                models.Customer.objects.create(name=Rword, contact=Num, phone=Num, source=7,
                                                referral_from=Rword, consult_courses_id=1, content=Rword,
                                                consultant_id=Cnum, memo=Rword, date='2018-03-20')
             except:

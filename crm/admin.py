@@ -90,10 +90,10 @@ class UserProfileAdmin(UserAdmin):#用户类,继承上一个类 UserAdmin
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ['id', 'qq', 'source', 'consultant', 'content', 'date']
+    list_display = ['id', 'contact_type', 'contact', 'source', 'consultant', 'content', 'date']
     list_filter = ('source','consultant','consult_courses',)
     list_per_page = 2
-    search_fields = ('name', 'qq')
+    search_fields = ('name', 'contact')
 
     actions = []#定制功能    #测试返回到一个新页面
 

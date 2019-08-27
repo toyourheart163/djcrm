@@ -61,11 +61,12 @@ class Course(models.Model):
     class Meta:#通过一个内嵌类 "class Meta" 给你的 model 定义元数据
         verbose_name_plural =  "03课程表"#verbose_name_plural给你的模型类起一个更可读的名字
 
-'''04客户信息表'''
 class Customer(models.Model):
-    name = models.CharField(max_length=32,blank=True,null=True)#客户名#CharField定长文本 #名字最长32 # Django可空 #数据库可以为空
-    qq = models.CharField(max_length=64,unique=True) #QQ号#CharField定长文本 #名字最长64 #唯一，不能重复
-    qq_name = models.CharField(max_length=64,blank=True,null=True)#QQ名 #CharField定长文本 #名字最长64 # Django可空 #数据库可以为空
+    '''04客户信息表'''
+    name = models.CharField('姓名', max_length=32,blank=True,null=True)
+    contact_type_choices = ((0,'qq'),(1,'微信'),(2,'手机'))
+    contact_type = models.SmallIntegerField('联系方式',choices=contact_type_choices,default=1)
+    contact = models.CharField('联系帐号', max_length=64,unique=True)
     phone = models.CharField(max_length=64,blank=True,null=True)#手机号 #CharField定长文本 #名字最长64 # Django可空 #数据库可以为空
 
     id_num=models.CharField(max_length=64,blank=True,null=True,verbose_name='身份证号')#身份证号
@@ -77,15 +78,16 @@ class Customer(models.Model):
     status = models.SmallIntegerField(choices=status_choices, default=1)  # 学员状态
 
     source_choices = ( #客户渠道来源 （内存生成）
-                      (0,'转介绍'),
-                      (1,'QQ群'),
-                      (2,'官网'),
-                      (3,'百度推广'),
-                      (4,'51CTO'),
-                      (5,'知乎'),
-                      (6,'市场推广'),)
+                    (7, '微信'),
+                    (0,'转介绍'),
+                    (1,'QQ群'),
+                    (2,'官网'),
+                    (3,'百度推广'),
+                    (4,'51CTO'),
+                    (5,'知乎'),
+                    (6,'市场推广'),)
     #PositiveSmallIntegerField正小整数 0 ～ 32767（省空间）#choices是Admin中显示选择框的内容，用不变动的数据放在内存中从而避免跨表操作
-    source = models.SmallIntegerField(choices=source_choices)#客户渠道来源
+    source = models.SmallIntegerField('客户来源',choices=source_choices)
 
     #CharField定长文本#verbose_name是Admin中显示的字段名称#名字最长64 # Django可空 #数据库可以为空
     referral_from = models.CharField(verbose_name="转介绍人qq",max_length=64,blank=True,null=True) #来自谁介绍的
@@ -99,7 +101,7 @@ class Customer(models.Model):
     tags = models.ManyToManyField("Tag",blank=True)#多对多关联到 标签表
 
     #ForeignKey就是表与表之间的某种约定的关系  #CASCADE从父表删除或更新且自动删除或更新子表中匹配的行。
-    consultant = models.ForeignKey("UserProfile", on_delete=models.CASCADE) #关联到  账号表
+    consultant = models.ForeignKey("UserProfile",verbose_name='课程顾问', on_delete=models.CASCADE) #关联到  账号表
 
     memo = models.TextField(blank=True,null=True)#备注#TextField无限制长度的文本#Django可空#数据库可以为空
 
@@ -107,7 +109,7 @@ class Customer(models.Model):
     date =  models.DateTimeField(auto_now_add=True)#创建时间（数据库自增）
 
     def __str__(self): #__str__()是Python的一个“魔幻”方法，这个方法定义了当object调用str()时应该返回的值。
-        return self.qq  #返回 #QQ号
+        return self.contact  #返回 #QQ号
 
     class Meta:#通过一个内嵌类 "class Meta" 给你的 model 定义元数据
         verbose_name_plural =  "04客户表" #verbose_name_plural给你的模型类起一个更可读的名字
@@ -580,7 +582,7 @@ class Tag(models.Model):
 """13一层菜单名"""
 class FirstLayerMenu(models.Model):
     '''第一层侧边栏菜单'''
-    name = models.CharField('一层菜单名',max_length=64)
+    name = models.CharField('一层菜单名',unique=True,max_length=64)
     url_type_choices = ((0,'相关的名字'),(1,'固定的URL'))
     url_type = models.SmallIntegerField(choices=url_type_choices,default=0)
     url_name = models.CharField(max_length=64,verbose_name='一层菜单路径')
@@ -596,7 +598,7 @@ class FirstLayerMenu(models.Model):
 """14二层菜单名"""
 class SubMenu(models.Model):
     '''第二层侧边栏菜单'''
-    name = models.CharField('二层菜单名', max_length=64)
+    name = models.CharField('二层菜单名',unique=True, max_length=64)
     url_type_choices = ((0,'相关的名字'),(1,'固定的URL'))
     url_type = models.SmallIntegerField(choices=url_type_choices,default=0)
     url_name = models.CharField(max_length=64, verbose_name='二层菜单路径')

@@ -50,9 +50,19 @@ except:
     print('already add db')
 
 try:
-	models.FirstLayerMenu.objects.create(name="销售未审核客户", url_name="not_audit", order=1)
-	models.FirstLayerMenu.objects.create(name="财务未缴费", url_name="not_payment", order=2)
-	models.FirstLayerMenu.objects.create(name="学生我的课程", url_name="student_course", order=3)
-	models.FirstLayerMenu.objects.create(name="讲师我的班级", url_name="teacher_class", order=4)
+	models.FirstLayerMenu.objects.create(name="销售未审核客户", url_name="not_audit", order=2)
+	models.FirstLayerMenu.objects.create(name="财务未缴费", url_name="not_payment", order=4)
+	models.FirstLayerMenu.objects.create(name="学生我的课程", url_name="student_course", order=1)
+	models.FirstLayerMenu.objects.create(name="讲师我的班级", url_name="teacher_class", order=3)
 except:
 	print('有菜单了')
+
+try:
+	names = ["角色学生","角色销售", "角色讲师", "角色财务"]
+	for i, name in enumerate(names):
+		r = models.Role.objects.get(pk=i+1)
+		# r.save()
+		m = models.FirstLayerMenu.objects.get(pk=i+1)
+		r.menus.add(m)
+except:
+	print('已添加角色')
