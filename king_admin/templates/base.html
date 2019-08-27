@@ -18,10 +18,9 @@
 
     <!-- Bootstrap core CSS -->
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-
+    {% block css %}{% endblock %}
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <link href="{% static 'css/ie10-viewport-bug-workaround.css' %}" rel="stylesheet">
-
     <!-- Custom styles for this template -->
     <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
     <link href="{% static 'css/king_admin_change.css' %}" rel="stylesheet">
@@ -32,9 +31,7 @@
 
 <body>
 
-    {% block body %}
-
-    {% endblock %}
+    {% block body %}{% endblock %}
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -45,6 +42,8 @@
     <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
     <script src="{% static 'js/king_admin_js.js' %}"></script>
     <script src="{% static 'js/king_admin_change.js' %}"></script>
+
+    {% block js%}{% endblock %}
 </body>
 
 </html>

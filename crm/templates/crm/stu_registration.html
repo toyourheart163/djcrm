@@ -1,7 +1,14 @@
 {#stu_registration.html#}
 {## ————————48PerfectCRM实现CRM客户报名流程学生合同————————#}
 {% extends 'crm/bpm_sample.html' %}
+{% load staticfiles %}
 {% load bpm_tags %}
+{% block css %}
+{##————————51PerfectCRM实现CRM客户报名流程学生合同上传照片————————#}
+<link rel="stylesheet"  href="{% static 'css/dropzone.css' %}" /> {#上传文件的插件#}
+{##————————51PerfectCRM实现CRM客户报名流程学生合同上传照片————————#}
+{% endblock %}
+
 {% block right-container-content %} {#自定义内容开始 右边页面内容#}
     <div class="container col-lg-7 col-md-offset-2">
         <div class="panel panel-warning">
@@ -103,6 +110,9 @@
 {% endblock %}
 
 {% block js %}
+
+<script src="{% static 'js/jquery.cookie.js' %}"></script>
+<script src="{% static 'js/dropzone.js' %}"></script>
     <script>
         function CloseWebPage() {
             if (confirm("您确定要关闭本页吗？")) {
