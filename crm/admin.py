@@ -98,7 +98,6 @@ class CustomerAdmin(admin.ModelAdmin):
     actions = []#定制功能    #测试返回到一个新页面
 
 #注册到 Django Admin里
-admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(models.Branch)                  #01校区表
 admin.site.register(models.ClassList)               #02班级表
 admin.site.register(models.Course)                  #03课程表，可以报名那些课程
@@ -110,6 +109,7 @@ admin.site.register(models.Payment)                 #07缴费记录表
 admin.site.register(models.CourseRecord)            #08每节课上课纪录表
 admin.site.register(models.StudyRecord)             #09学习纪录
 # admin.site.register(models.UserProfile)             #10账号表
+admin.site.register(UserProfile, UserProfileAdmin)
 # 现在注册这个新UserAdmin ,因为我们不在使用Django的内置权限
 admin.site.register(models.Role)                    #11角色表
 admin.site.register(models.Tag)                     #12标签表

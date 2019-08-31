@@ -30,7 +30,7 @@ class CustomerAdmin(BaseAdmin):#定制Djanago admin
     list_per_page = 10
     list_filter = ('date', 'source','consultant','consult_courses',)
     search_fields = ('name', 'contact')
-    actions = []#定制功能    #测试返回到一个新页面
+    actions = ["test_actions", ] #定制功能    #测试返回到一个新页面
     ordering = '-qq'
     filter_horizontal = ('tags',)
     readonly_fields = ('qq', 'consultant',)
@@ -39,6 +39,10 @@ class CustomerAdmin(BaseAdmin):#定制Djanago admin
     colored_fields = {
         'status':{'已报名':"rgba(145, 255, 0, 0.78)",
                   '未报名':"#ddd"},}
+
+    def test_actions(self, request, quersets):
+        return render(request, "king_admin/table_index.html")
+    test_actions.short_description = "test"
 
     def enroll(self):
         '''报名'''
@@ -51,6 +55,7 @@ class CustomerAdmin(BaseAdmin):#定制Djanago admin
                 # target属性用于表示所链接文件打开到的位置 #记住，“”内的文字只是表示一个对象的名子。
     
     enroll.display_name = "报名链接"
+
 
     def default_form_validation(self,obj):
         print('validation:制定的',obj.cleaned_data)

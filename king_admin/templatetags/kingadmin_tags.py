@@ -199,8 +199,8 @@ def  get_orderby_key(request,column):
                 else:
                     return "-%s"%column
         return column   #同上4句
-# kingadmin排序功能
 
+# kingadmin排序功能
 @register.simple_tag
 def display_order_by_icon(request, column):
     current_order_by_key = request.GET.get("_o")
@@ -296,6 +296,7 @@ def get_admin_actions(admin_obj):
     #选择功能
     options = "<option class='form-control' value='-1'>-------</option>"#默认为空
     actions = admin_obj.actions #默认加自定制
+    actions = list(set(actions))
     print('默认加自定制',actions)
     for action in actions:
         action_func = getattr(admin_obj,action)#功能方法  #反射
